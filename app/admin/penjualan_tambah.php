@@ -48,7 +48,7 @@ $row = function ($idv = '', $jml = 1) use ($varian) {
 };
 
 admin_header('Pesanan Baru', 'penjualan');
-page_title('Pesanan Baru', '<a class="btn btn-outline-secondary" href="penjualan.php"><i class="bi bi-arrow-left"></i> Kembali</a>');
+page_title('Pesanan Baru', '<a class="btn btn-outline-secondary" href="penjualan.php">Kembali</a>');
 ?>
 <form method="post" class="card">
   <div class="card-body">
@@ -84,10 +84,10 @@ page_title('Pesanan Baru', '<a class="btn btn-outline-secondary" href="penjualan
       </tbody>
       <template><?= $row() ?></template>
     </table>
-    <button type="button" class="btn btn-sm btn-outline-secondary" data-add-row="#tblItem"><i class="bi bi-plus"></i> Tambah baris</button>
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-add-row="#tblItem">Tambah baris</button>
   </div>
-  <div class="card-footer bg-white">
-    <button class="btn btn-hibiscus"><i class="bi bi-save"></i> Buat Pesanan</button>
+  <div class="card-footer">
+    <button class="btn btn-hibiscus">Buat Pesanan</button>
     <span class="small text-muted ms-2">Hanya ukuran yang masih ada stoknya yang ditampilkan. Harga diambil dari harga produk saat ini.</span>
   </div>
 </form>

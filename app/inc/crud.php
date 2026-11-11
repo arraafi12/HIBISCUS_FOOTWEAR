@@ -118,14 +118,14 @@ function crud_list(array $d): void
     $sql .= ' ORDER BY ' . ($d['order'] ?? $pk);
     $data = rows($sql, $params);
 
-    page_title($d['title'], '<a class="btn btn-hibiscus" href="?form=1"><i class="bi bi-plus-lg"></i> Tambah</a>');
+    page_title($d['title'], '<a class="btn btn-hibiscus" href="?form=1">Tambah</a>');
     ?>
     <div class="card">
       <div class="card-body">
         <?php if (!empty($d['search'])): ?>
         <form class="row g-2 mb-3" method="get">
           <div class="col-sm-6 col-md-4"><input class="form-control" name="q" value="<?= e($cari) ?>" placeholder="Cari..."></div>
-          <div class="col-auto"><button class="btn btn-outline-secondary"><i class="bi bi-search"></i> Cari</button></div>
+          <div class="col-auto"><button class="btn btn-outline-secondary">Cari</button></div>
         </form>
         <?php endif; ?>
         <div class="table-responsive">
@@ -146,7 +146,7 @@ function crud_list(array $d): void
                     if (is_callable($f))       echo $f($r);
                     elseif ($f === 'rupiah')   echo rupiah($r[$col]);
                     elseif ($f === 'angka')    echo angka($r[$col]);
-                    elseif ($f === 'bool')     echo $r[$col] ? '<span class="badge bg-success">Ya</span>' : '<span class="badge bg-secondary">Tidak</span>';
+                    elseif ($f === 'bool')     echo status_badge($r[$col] ? 'ya' : 'tidak');
                     else                       echo e($r[$col]);
                   ?></td>
                 <?php endforeach; ?>
@@ -187,7 +187,7 @@ function crud_form(array $d, string $editId): void
     }
 
     page_title(($editId !== '' ? 'Ubah ' : 'Tambah ') . $d['title'],
-        '<a class="btn btn-outline-secondary" href="?"><i class="bi bi-arrow-left"></i> Kembali</a>');
+        '<a class="btn btn-outline-secondary" href="?">Kembali</a>');
     ?>
     <div class="card" style="max-width: 760px">
       <div class="card-body">
@@ -230,7 +230,7 @@ function crud_form(array $d, string $editId): void
               <?php endif; ?>
             </div>
           <?php endforeach; ?>
-          <button class="btn btn-hibiscus"><i class="bi bi-save"></i> Simpan</button>
+          <button class="btn btn-hibiscus">Simpan</button>
           <a class="btn btn-link" href="?">Batal</a>
         </form>
       </div>

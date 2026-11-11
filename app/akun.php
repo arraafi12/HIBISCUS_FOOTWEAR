@@ -29,11 +29,11 @@ $pl = row('SELECT * FROM pelanggan WHERE id_pelanggan = ?', [$me['id']]);
 $pesanan = rows('SELECT pj.*, (SELECT SUM(jumlah) FROM detail_penjualan d WHERE d.id_penjualan = pj.id_penjualan) AS pasang
                    FROM penjualan pj WHERE pj.id_pelanggan = ? ORDER BY pj.tanggal_pesan DESC', [$me['id']]);
 
-toko_header('Akun Saya');
+toko_header('Akun Saya', 'akun');
 ?>
 <div class="row g-4">
   <div class="col-lg-8">
-    <h1 class="h4 mb-3">Pesanan Saya</h1>
+    <h1 class="h3 mb-4">Pesanan Saya</h1>
     <?php if (!$pesanan): ?>
       <div class="card card-body text-center text-muted py-5">Belum ada pesanan. <a href="index.php">Mulai belanja</a></div>
     <?php endif; ?>
@@ -54,7 +54,7 @@ toko_header('Akun Saya');
   </div>
   <div class="col-lg-4" id="profil">
     <div class="card">
-      <div class="card-header bg-white fw-semibold">Profil</div>
+      <div class="card-header fw-semibold">Profil</div>
       <div class="card-body">
         <form method="post">
           <?= csrf_field() ?>

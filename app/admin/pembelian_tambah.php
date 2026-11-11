@@ -67,7 +67,7 @@ $row = function ($idb = '', $jml = '', $harga = '') use ($bahanOptions) {
 };
 
 admin_header('Pembelian Baru', 'pembelian');
-page_title('Pembelian Baru', '<a class="btn btn-outline-secondary" href="pembelian.php"><i class="bi bi-arrow-left"></i> Kembali</a>');
+page_title('Pembelian Baru', '<a class="btn btn-outline-secondary" href="pembelian.php">Kembali</a>');
 ?>
 <form method="post" class="card">
   <div class="card-body">
@@ -108,10 +108,10 @@ page_title('Pembelian Baru', '<a class="btn btn-outline-secondary" href="pembeli
       </tbody>
       <template><?= $row() ?></template>
     </table>
-    <button type="button" class="btn btn-sm btn-outline-secondary" data-add-row="#tblItem"><i class="bi bi-plus"></i> Tambah baris</button>
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-add-row="#tblItem">Tambah baris</button>
   </div>
-  <div class="card-footer bg-white">
-    <button class="btn btn-hibiscus"><i class="bi bi-save"></i> Simpan Pembelian</button>
+  <div class="card-footer">
+    <button class="btn btn-hibiscus">Simpan Pembelian</button>
     <span class="small text-muted ms-2">Total faktur dan stok bahan dihitung otomatis oleh database.</span>
   </div>
 </form>

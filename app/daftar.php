@@ -54,7 +54,7 @@ toko_header('Daftar');
 <div class="mx-auto" style="max-width: 560px">
   <div class="card">
     <div class="card-body p-4">
-      <h1 class="h4 mb-3">Buat Akun</h1>
+      <h1 class="h3 mb-4">Buat Akun</h1>
       <form method="post">
         <?= csrf_field() ?>
         <div class="mb-3"><label class="form-label">Nama lengkap</label><input class="form-control" name="nama_pelanggan" value="<?= e($old['nama_pelanggan'] ?? '') ?>" required></div>

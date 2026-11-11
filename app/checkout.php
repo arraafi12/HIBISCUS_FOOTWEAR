@@ -29,14 +29,14 @@ if (is_post()) {
 $subtotal = array_sum(array_column($isi, 'subtotal'));
 $ongkir   = ongkir_untuk($pl['kota']);
 
-toko_header('Checkout');
+toko_header('Checkout', 'keranjang');
 ?>
-<h1 class="h4 mb-3">Checkout</h1>
+<h1 class="h3 mb-4">Checkout</h1>
 <form method="post" class="row g-4">
   <?= csrf_field() ?>
   <div class="col-lg-7">
     <div class="card">
-      <div class="card-header bg-white fw-semibold">Alamat Pengiriman</div>
+      <div class="card-header fw-semibold">Alamat Pengiriman</div>
       <div class="card-body">
         <div class="mb-3"><label class="form-label">Penerima</label>
           <input class="form-control" value="<?= e($pl['nama_pelanggan'] . ' · ' . $pl['no_hp']) ?>" disabled></div>
@@ -57,7 +57,7 @@ toko_header('Checkout');
   </div>
   <div class="col-lg-5">
     <div class="card">
-      <div class="card-header bg-white fw-semibold">Ringkasan Pesanan</div>
+      <div class="card-header fw-semibold">Ringkasan Pesanan</div>
       <ul class="list-group list-group-flush">
         <?php foreach ($isi as $i): ?>
           <li class="list-group-item d-flex justify-content-between small">
@@ -71,7 +71,7 @@ toko_header('Checkout');
         <li class="list-group-item d-flex justify-content-between fw-bold"><span>Total</span><span id="total" data-subtotal="<?= e($subtotal) ?>"><?= rupiah($subtotal + $ongkir) ?></span></li>
       </ul>
       <div class="card-body">
-        <button class="btn btn-hibiscus w-100"><i class="bi bi-lock"></i> Buat Pesanan</button>
+        <button class="btn btn-hibiscus w-100">Buat Pesanan</button>
         <div class="small text-muted mt-2">Stok langsung dipesankan untukmu. Pembayaran dilakukan sekali, lunas, di halaman berikutnya.</div>
       </div>
     </div>

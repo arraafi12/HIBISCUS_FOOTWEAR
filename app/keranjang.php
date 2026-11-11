@@ -39,13 +39,12 @@ $isi = keranjang_detail();
 $total = array_sum(array_column($isi, 'subtotal'));
 $adaMasalah = (bool) array_filter($isi, fn($i) => $i['jumlah'] > $i['stok'] || !$i['aktif']);
 
-toko_header('Keranjang');
+toko_header('Keranjang', 'keranjang');
 ?>
-<h1 class="h4 mb-3">Keranjang Belanja</h1>
+<h1 class="h3 mb-4">Keranjang Belanja</h1>
 <?php if (!$isi): ?>
-  <div class="text-center py-5">
-    <i class="bi bi-bag display-4 text-muted"></i>
-    <p class="mt-3 text-muted">Keranjang masih kosong.</p>
+  <div class="py-5 border-top border-bottom">
+    <p class="mb-3">Keranjang masih kosong.</p>
     <a class="btn btn-hibiscus" href="index.php">Lihat katalog</a>
   </div>
 <?php else: ?>
@@ -56,7 +55,7 @@ toko_header('Keranjang');
         <?php foreach ($isi as $i): ?>
           <li class="list-group-item py-3">
             <div class="d-flex gap-3 align-items-center">
-              <div class="product-img rounded" style="width:72px;font-size:1.8rem"><i class="bi <?= ikon_kategori($i['nama_kategori']) ?>"></i></div>
+              <?= produk_tile($i['nama_produk'], '', $i['nama_kategori'], 'sm') ?>
               <div class="flex-fill">
                 <a class="fw-semibold text-reset" href="produk.php?id=<?= e($i['id_produk']) ?>"><?= e($i['nama_produk']) ?></a>
                 <div class="small text-muted">Ukuran <?= e($i['ukuran']) ?> · <?= rupiah($i['harga_jual']) ?> · stok <?= e($i['stok']) ?></div>

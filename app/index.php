@@ -20,48 +20,56 @@ $produk = rows('SELECT p.*, k.nama_kategori,
                   FROM produk p JOIN kategori k ON k.id_kategori = p.id_kategori
                  WHERE ' . implode(' AND ', $where) . '
                  ORDER BY stok = 0, p.nama_produk', $params);
-$kategori = rows('SELECT * FROM kategori ORDER BY nama_kategori');
+$kategori = rows('SELECT k.* FROM kategori k WHERE EXISTS (SELECT 1 FROM produk p WHERE p.id_kategori = k.id_kategori AND p.aktif = 1) ORDER BY nama_kategori');
 $terlaris = array_column(rows('SELECT kode_produk FROM v_produk_terlaris WHERE peringkat <= 2'), 'kode_produk');
+$ukuran   = rows('SELECT MIN(ukuran) AS min_u, MAX(ukuran) AS max_u FROM produk_ukuran')[0];
 
-toko_header('Katalog');
+toko_header('Katalog', 'katalog');
 ?>
-<div class="hero p-4 p-md-5 mb-4">
-  <h1 class="display-6 fw-bold mb-2">Sepatu buatan sendiri, dibuat dengan cinta.</h1>
-  <p class="mb-0 opacity-75">Diproduksi langsung oleh HIBISCUS FOOTWEAR. Pilih ukuranmu, bayar sekali lunas, dan retur mudah dalam 7 hari.</p>
-</div>
+<section class="intro">
+  <div class="eyebrow mb-2">Koleksi <?= date('Y') ?></div>
+  <h1>Sepatu yang kami potong, jahit, dan rakit sendiri.</h1>
+  <p>Setiap pasang dibuat per batch oleh tim produksi Hibiscus. Pilih ukuran yang tersedia; stok di halaman ini adalah stok gudang saat ini.</p>
+  <div class="facts">
+    <span>Ukuran <?= e($ukuran['min_u']) ?>–<?= e($ukuran['max_u']) ?></span>
+    <span>Bayar sekali, lunas</span>
+    <span>Tukar ukuran dalam 7 hari</span>
+  </div>
+</section>
 
-<div class="d-flex flex-wrap gap-2 align-items-center mb-4">
-  <a class="btn btn-sm btn-outline-hibiscus <?= !$kat ? 'active' : '' ?>" href="?">Semua</a>
-  <?php foreach ($kategori as $k): ?>
-    <a class="btn btn-sm btn-outline-hibiscus <?= $kat === (int) $k['id_kategori'] ? 'active' : '' ?>" href="?kategori=<?= e($k['id_kategori']) ?>"><?= e($k['nama_kategori']) ?></a>
-  <?php endforeach; ?>
-  <form class="ms-auto d-flex gap-2" method="get">
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <nav class="filters" aria-label="Kategori">
+    <a class="<?= !$kat ? 'active' : '' ?>" href="?">Semua</a>
+    <?php foreach ($kategori as $k): ?>
+      <a class="<?= $kat === (int) $k['id_kategori'] ? 'active' : '' ?>" href="?kategori=<?= e($k['id_kategori']) ?>"><?= e($k['nama_kategori']) ?></a>
+    <?php endforeach; ?>
+  </nav>
+  <form class="d-flex gap-2" method="get" role="search">
     <?php if ($kat): ?><input type="hidden" name="kategori" value="<?= e($kat) ?>"><?php endif; ?>
-    <input class="form-control form-control-sm" name="q" value="<?= e($cari) ?>" placeholder="Cari sepatu...">
-    <button class="btn btn-sm btn-hibiscus"><i class="bi bi-search"></i></button>
+    <label class="visually-hidden" for="q">Cari produk</label>
+    <input class="form-control form-control-sm" id="q" name="q" value="<?= e($cari) ?>" placeholder="Cari model…" style="width: 200px">
+    <button class="btn btn-sm btn-outline-secondary">Cari</button>
   </form>
 </div>
 
-<div class="row g-4">
+<?php if ($cari !== ''): ?>
+  <p class="text-muted small mb-3"><?= count($produk) ?> hasil untuk "<?= e($cari) ?>" · <a href="?<?= $kat ? 'kategori=' . e($kat) : '' ?>">hapus pencarian</a></p>
+<?php endif; ?>
+
+<div class="row g-4 g-lg-5">
   <?php foreach ($produk as $p): ?>
     <div class="col-6 col-md-4 col-lg-3">
-      <a class="card product-card h-100 text-reset text-decoration-none" href="produk.php?id=<?= e($p['id_produk']) ?>">
-        <div class="product-img position-relative">
-          <i class="bi <?= ikon_kategori($p['nama_kategori']) ?>"></i>
-          <?php if (in_array($p['kode_produk'], $terlaris, true)): ?>
-            <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2"><i class="bi bi-star-fill"></i> Terlaris</span>
-          <?php endif; ?>
-          <?php if ($p['stok'] == 0): ?><span class="badge bg-secondary position-absolute top-0 end-0 m-2">Stok habis</span><?php endif; ?>
-        </div>
-        <div class="card-body">
-          <div class="small text-muted"><?= e($p['nama_kategori']) ?></div>
-          <div class="fw-semibold"><?= e($p['nama_produk']) ?></div>
-          <div class="text-hibiscus fw-bold"><?= rupiah($p['harga_jual']) ?></div>
-          <div class="small text-muted mt-1"><?= $p['ukuran_tersedia'] ? 'Ukuran: ' . e(str_replace(',', ', ', $p['ukuran_tersedia'])) : 'Segera diproduksi' ?></div>
-        </div>
+      <a class="product" href="produk.php?id=<?= e($p['id_produk']) ?>">
+        <?= produk_tile($p['nama_produk'], $p['kode_produk'], $p['nama_kategori'], '',
+              $p['stok'] == 0 ? 'Habis' : (in_array($p['kode_produk'], $terlaris, true) ? 'Terlaris' : '')) ?>
+        <div class="product-name"><?= e($p['nama_produk']) ?></div>
+        <div class="product-price"><?= rupiah($p['harga_jual']) ?></div>
+        <div class="product-sizes"><?= $p['ukuran_tersedia'] ? e(str_replace(',', ' · ', $p['ukuran_tersedia'])) : 'Sedang diproduksi ulang' ?></div>
       </a>
     </div>
   <?php endforeach; ?>
-  <?php if (!$produk): ?><div class="col-12 text-center text-muted py-5">Produk tidak ditemukan.</div><?php endif; ?>
+  <?php if (!$produk): ?>
+    <div class="col-12 py-5 text-muted">Tidak ada produk yang cocok. <a href="?">Lihat semua produk</a>.</div>
+  <?php endif; ?>
 </div>
 <?php toko_footer();

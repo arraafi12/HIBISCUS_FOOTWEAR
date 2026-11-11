@@ -48,7 +48,7 @@ $varian = rows('SELECT * FROM produk_ukuran WHERE id_produk = ? ORDER BY ukuran'
 
 admin_header('Ukuran ' . $produk['nama_produk'], 'produk');
 page_title('Ukuran & Stok: ' . $produk['nama_produk'],
-    '<a class="btn btn-outline-secondary" href="produk.php"><i class="bi bi-arrow-left"></i> Daftar Produk</a>');
+    '<a class="btn btn-outline-secondary" href="produk.php">Daftar Produk</a>');
 ?>
 <div class="row g-3">
   <div class="col-lg-8">
@@ -89,7 +89,7 @@ page_title('Ukuran & Stok: ' . $produk['nama_produk'],
   </div>
   <div class="col-lg-4">
     <div class="card">
-      <div class="card-header bg-white fw-semibold">Tambah Ukuran</div>
+      <div class="card-header fw-semibold">Tambah Ukuran</div>
       <div class="card-body">
         <form method="post">
           <?= csrf_field() ?>
@@ -99,7 +99,7 @@ page_title('Ukuran & Stok: ' . $produk['nama_produk'],
             <div class="col"><label class="form-label">Sampai</label><input class="form-control" type="number" min="30" max="50" name="ukuran_sampai"></div>
           </div>
           <div class="mb-3"><label class="form-label">Stok minimum</label><input class="form-control" type="number" min="0" name="stok_minimum" value="3"></div>
-          <button class="btn btn-hibiscus w-100"><i class="bi bi-plus-lg"></i> Tambah</button>
+          <button class="btn btn-hibiscus w-100">Tambah</button>
           <div class="form-text">Isi "Sampai" untuk menambah beberapa ukuran sekaligus. SKU dibuat otomatis.</div>
         </form>
       </div>

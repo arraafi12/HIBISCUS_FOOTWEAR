@@ -52,8 +52,8 @@ $st    = $pj['status'];
 
 admin_header('Pesanan ' . $pj['no_pesanan'], 'penjualan');
 page_title('Pesanan ' . $pj['no_pesanan'],
-    '<button class="btn btn-outline-secondary" onclick="window.print()"><i class="bi bi-printer"></i> Cetak</button>'
-    . '<a class="btn btn-outline-secondary" href="penjualan.php"><i class="bi bi-arrow-left"></i> Kembali</a>');
+    '<button class="btn btn-outline-secondary" onclick="window.print()">Cetak</button>'
+    . '<a class="btn btn-outline-secondary" href="penjualan.php">Kembali</a>');
 ?>
 <div class="row g-3">
   <div class="col-xl-8">
@@ -63,7 +63,7 @@ page_title('Pesanan ' . $pj['no_pesanan'],
           <div>
             <div class="fw-semibold"><?= e($pj['nama_pelanggan']) ?></div>
             <div class="small text-muted"><?= e($pj['email']) ?> · <?= e($pj['no_hp']) ?></div>
-            <div class="small"><i class="bi bi-geo-alt"></i> <?= e($pj['alamat_kirim']) ?></div>
+            <div class="small"><?= e($pj['alamat_kirim']) ?></div>
           </div>
           <div class="text-end">
             <?= status_badge($st) ?>
@@ -93,7 +93,7 @@ page_title('Pesanan ' . $pj['no_pesanan'],
 
     <?php if ($retur): ?>
     <div class="card mb-3">
-      <div class="card-header bg-white fw-semibold">Retur</div>
+      <div class="card-header fw-semibold">Retur</div>
       <ul class="list-group list-group-flush">
         <?php foreach ($retur as $r): ?>
           <li class="list-group-item d-flex justify-content-between">
@@ -109,7 +109,7 @@ page_title('Pesanan ' . $pj['no_pesanan'],
   <div class="col-xl-4 d-print-none">
     <!-- 1. Pembayaran -->
     <div class="card mb-3">
-      <div class="card-header bg-white fw-semibold"><i class="bi bi-credit-card"></i> Pembayaran</div>
+      <div class="card-header fw-semibold">Pembayaran</div>
       <div class="card-body">
         <?php if ($bayar): ?>
           <div><?= e(label($bayar['metode'])) ?> · <?= rupiah($bayar['jumlah_bayar']) ?></div>
@@ -130,7 +130,7 @@ page_title('Pesanan ' . $pj['no_pesanan'],
 
     <!-- 2. Pengiriman -->
     <div class="card mb-3">
-      <div class="card-header bg-white fw-semibold"><i class="bi bi-truck"></i> Pengiriman</div>
+      <div class="card-header fw-semibold">Pengiriman</div>
       <div class="card-body">
         <?php if ($kirim): ?>
           <div><?= e($kirim['kurir'] . ' ' . $kirim['layanan']) ?> · <b><?= e($kirim['no_resi']) ?></b></div>
@@ -163,7 +163,7 @@ page_title('Pesanan ' . $pj['no_pesanan'],
     <?php if ($st === 'selesai' && $batas): ?>
       <div class="card mb-3"><div class="card-body">
         <?php if (date('Y-m-d') <= $batas): ?>
-          <a class="btn btn-sm btn-outline-hibiscus w-100" href="retur_tambah.php?penjualan=<?= e($id) ?>"><i class="bi bi-arrow-return-left"></i> Ajukan Retur</a>
+          <a class="btn btn-sm btn-outline-hibiscus w-100" href="retur_tambah.php?penjualan=<?= e($id) ?>">Ajukan Retur</a>
           <div class="small text-muted mt-1">Batas retur: <?= e(tgl($batas)) ?></div>
         <?php else: ?>
           <span class="small text-muted">Batas retur sudah lewat (<?= e(tgl($batas)) ?>).</span>

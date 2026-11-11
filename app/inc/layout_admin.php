@@ -41,21 +41,19 @@ function admin_header(string $title, string $active = ''): void
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?= e($title) ?> · Admin <?= e($app) ?></title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="<?= url('assets/app.css') ?>">
+  <title><?= e($title) ?> · Admin Hibiscus Footwear</title>
+  <?= head_assets() ?>
 </head>
 <body class="admin">
-<nav class="navbar navbar-dark bg-hibiscus sticky-top d-print-none">
-  <div class="container-fluid">
-    <button class="btn btn-outline-light d-lg-none me-2" type="button" data-bs-toggle="offcanvas"
-            data-bs-target="#sidebar" aria-label="Menu"><i class="bi bi-list"></i></button>
-    <a class="navbar-brand fw-bold" href="<?= url('admin/index.php') ?>"><i class="bi bi-flower2"></i> <?= e($app) ?> <small class="fw-normal opacity-75">Admin</small></a>
-    <div class="ms-auto d-flex align-items-center gap-2 text-white">
-      <a class="btn btn-sm btn-outline-light" href="<?= url('index.php') ?>" target="_blank"><i class="bi bi-shop"></i><span class="d-none d-sm-inline"> Lihat Toko</span></a>
-      <span class="d-none d-md-inline small"><i class="bi bi-person-circle"></i> <?= e($u['nama']) ?></span>
-      <a class="btn btn-sm btn-light" href="<?= url('admin/logout.php') ?>">Keluar</a>
+<nav class="navbar topbar sticky-top d-print-none py-2">
+  <div class="container-fluid px-md-4">
+    <button class="btn btn-sm btn-outline-secondary d-lg-none me-2" type="button" data-bs-toggle="offcanvas"
+            data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Buka menu">Menu</button>
+    <a class="wordmark" href="<?= url('admin/index.php') ?>">Hibiscus<span>Admin</span></a>
+    <div class="ms-auto d-flex align-items-center gap-3 small">
+      <a href="<?= url('index.php') ?>" target="_blank" rel="noopener">Lihat toko ↗</a>
+      <span class="d-none d-md-inline text-muted"><?= e($u['nama']) ?></span>
+      <a href="<?= url('admin/logout.php') ?>">Keluar</a>
     </div>
   </div>
 </nav>
@@ -67,19 +65,18 @@ function admin_header(string $title, string $active = ''): void
           <h5 class="offcanvas-title">Menu</h5>
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Tutup"></button>
         </div>
-        <div class="offcanvas-body d-block p-2">
+        <nav class="offcanvas-body d-block p-0 pb-4" aria-label="Menu admin">
           <?php foreach (admin_menu() as [$grup, $items]): ?>
-            <div class="sidebar-group"><?= e($grup) ?></div>
+            <?php if ($grup !== 'Dashboard'): ?><div class="sidebar-group"><?= e($grup) ?></div><?php endif; ?>
             <?php foreach ($items as [$key, $text, $icon, $href]): ?>
-              <a class="sidebar-link <?= $key === $active ? 'active' : '' ?>" href="<?= url('admin/' . $href) ?>">
-                <i class="bi <?= $icon ?>"></i> <?= e($text) ?>
-              </a>
+              <a class="sidebar-link <?= $key === $active ? 'active' : '' ?>" href="<?= url('admin/' . $href) ?>"
+                 <?= $key === $active ? 'aria-current="page"' : '' ?>><?= e($text) ?></a>
             <?php endforeach; ?>
           <?php endforeach; ?>
-        </div>
+        </nav>
       </div>
     </aside>
-    <main class="col-lg-10 py-3 px-md-4">
+    <main class="col-lg-10 py-4 px-md-4">
       <?= render_flash() ?>
     <?php
 }
@@ -101,7 +98,7 @@ function admin_footer(): void
 function page_title(string $title, string $actions = ''): void
 {
     echo '<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">'
-        . '<h1 class="h4 mb-0">' . e($title) . '</h1><div class="d-flex gap-2 d-print-none">' . $actions . '</div></div>';
+        . '<h1 class="page-title mb-0">' . e($title) . '</h1><div class="d-flex gap-2 d-print-none">' . $actions . '</div></div>';
 }
 
 /** Tombol hapus kecil dalam form POST dengan konfirmasi. */

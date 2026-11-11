@@ -22,7 +22,7 @@ $data = rows('SELECT * FROM v_laporan_produksi' . ($status ? ' WHERE status = ?'
 $produk = options('SELECT id_produk, CONCAT(kode_produk, " - ", nama_produk) FROM produk WHERE aktif = 1 ORDER BY kode_produk');
 
 admin_header('Produksi', 'produksi');
-page_title('Produksi', '<button class="btn btn-hibiscus" data-bs-toggle="collapse" data-bs-target="#formBaru"><i class="bi bi-plus-lg"></i> Produksi Baru</button>');
+page_title('Produksi', '<button class="btn btn-hibiscus" data-bs-toggle="collapse" data-bs-target="#formBaru">Produksi Baru</button>');
 ?>
 <div class="collapse mb-3" id="formBaru">
   <form method="post" class="card card-body">
@@ -38,7 +38,7 @@ page_title('Produksi', '<button class="btn btn-hibiscus" data-bs-toggle="collaps
         <input class="form-control" type="date" name="tanggal_mulai" required value="<?= date('Y-m-d') ?>"></div>
       <div class="col-md-3"><label class="form-label">Catatan</label><input class="form-control" name="catatan" placeholder="mis. Target 50 pasang"></div>
     </div>
-    <div class="mt-3"><button class="btn btn-hibiscus"><i class="bi bi-save"></i> Buat Produksi</button></div>
+    <div class="mt-3"><button class="btn btn-hibiscus">Buat Produksi</button></div>
   </form>
 </div>
 

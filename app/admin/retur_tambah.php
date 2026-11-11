@@ -25,7 +25,7 @@ if (is_post()) {
 
 admin_header('Ajukan Retur', 'retur');
 page_title('Ajukan Retur: ' . $pj['no_pesanan'],
-    '<a class="btn btn-outline-secondary" href="penjualan_detail.php?id=' . e($idp) . '"><i class="bi bi-arrow-left"></i> Kembali</a>');
+    '<a class="btn btn-outline-secondary" href="penjualan_detail.php?id=' . e($idp) . '">Kembali</a>');
 ?>
 <form method="post" class="card">
   <div class="card-body">
@@ -37,7 +37,7 @@ page_title('Ajukan Retur: ' . $pj['no_pesanan'],
       <input class="form-control" type="date" name="tanggal_pengajuan" value="<?= date('Y-m-d') ?>" required>
     </div>
     <?= form_retur_fields($barang) ?>
-    <button class="btn btn-hibiscus"><i class="bi bi-send"></i> Ajukan Retur</button>
+    <button class="btn btn-hibiscus">Ajukan Retur</button>
   </div>
 </form>
 <?php admin_footer();

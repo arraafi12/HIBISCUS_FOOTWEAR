@@ -42,7 +42,7 @@ if (is_post()) {
 $items = rows('SELECT * FROM v_laporan_retur WHERE id_retur = ? ORDER BY nama_produk, ukuran_retur', [$id]);
 
 admin_header('Retur ' . $r['no_retur'], 'retur');
-page_title('Retur ' . $r['no_retur'], '<a class="btn btn-outline-secondary" href="retur.php"><i class="bi bi-arrow-left"></i> Kembali</a>');
+page_title('Retur ' . $r['no_retur'], '<a class="btn btn-outline-secondary" href="retur.php">Kembali</a>');
 ?>
 <div class="row g-3">
   <div class="col-xl-8">
@@ -63,7 +63,7 @@ page_title('Retur ' . $r['no_retur'], '<a class="btn btn-outline-secondary" href
           <tbody>
           <?php foreach ($items as $it): ?>
             <tr><td><?= e($it['nama_produk']) ?></td><td><?= e($it['ukuran_retur']) ?></td>
-                <td><?= $it['kondisi'] === 'cacat' ? '<span class="badge bg-danger">Cacat</span>' : '<span class="badge bg-success">Baik</span>' ?></td>
+                <td><?= status_badge($it['kondisi']) ?></td>
                 <td class="num"><?= angka($it['jumlah']) ?></td><td class="num"><?= rupiah($it['nilai_barang']) ?></td>
                 <td><?= e($it['ukuran_pengganti'] ?? '-') ?></td></tr>
           <?php endforeach; ?>
@@ -78,7 +78,7 @@ page_title('Retur ' . $r['no_retur'], '<a class="btn btn-outline-secondary" href
   <div class="col-xl-4">
     <?php if (in_array($r['status'], ['diajukan', 'diterima'], true)): ?>
     <div class="card">
-      <div class="card-header bg-white fw-semibold">Proses Retur</div>
+      <div class="card-header fw-semibold">Proses Retur</div>
       <div class="card-body">
         <form method="post">
           <?= csrf_field() ?>

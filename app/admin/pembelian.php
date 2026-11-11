@@ -14,14 +14,14 @@ $data = rows('SELECT pb.*, s.nama_supplier, pg.nama_lengkap,
                ORDER BY pb.tanggal DESC, pb.no_faktur DESC', [$awal, $akhir]);
 
 admin_header('Pembelian', 'pembelian');
-page_title('Pembelian Bahan Baku', '<a class="btn btn-hibiscus" href="pembelian_tambah.php"><i class="bi bi-plus-lg"></i> Pembelian Baru</a>');
+page_title('Pembelian Bahan Baku', '<a class="btn btn-hibiscus" href="pembelian_tambah.php">Pembelian Baru</a>');
 ?>
 <div class="card">
   <div class="card-body">
     <form class="row g-2 mb-3" method="get">
       <div class="col-auto"><input class="form-control" type="date" name="awal" value="<?= e($awal) ?>"></div>
       <div class="col-auto"><input class="form-control" type="date" name="akhir" value="<?= e($akhir) ?>"></div>
-      <div class="col-auto"><button class="btn btn-outline-secondary"><i class="bi bi-funnel"></i> Tampilkan</button></div>
+      <div class="col-auto"><button class="btn btn-outline-secondary">Tampilkan</button></div>
     </form>
     <div class="table-responsive">
       <table class="table table-sm table-hover">

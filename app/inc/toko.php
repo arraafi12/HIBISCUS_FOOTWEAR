@@ -47,43 +47,40 @@ function keranjang_detail(): array
 // ---------------------------------------------------------------------
 //  Tampilan
 // ---------------------------------------------------------------------
-function toko_header(string $title): void
+function toko_header(string $title, string $active = ''): void
 {
     $p = pelanggan();
-    $app = config('app_name');
     $n = keranjang_jumlah();
+    $link = fn(string $key, string $href, string $text) =>
+        '<a class="nav-link' . ($active === $key ? ' active' : '') . '" href="' . url($href) . '">' . $text . '</a>';
     ?>
 <!doctype html>
 <html lang="id">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?= e($title) ?> · <?= e($app) ?></title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="<?= url('assets/app.css') ?>">
+  <title><?= e($title) ?> · Hibiscus Footwear</title>
+  <?= head_assets() ?>
 </head>
 <body class="d-flex flex-column min-vh-100">
-<nav class="navbar navbar-expand-md navbar-dark bg-hibiscus">
+<nav class="navbar navbar-expand-md topbar py-2">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="<?= url('index.php') ?>"><i class="bi bi-flower2"></i> <?= e($app) ?></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Menu"><span class="navbar-toggler-icon"></span></button>
+    <a class="wordmark" href="<?= url('index.php') ?>">Hibiscus<span>Footwear</span></a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Buka menu"><span class="navbar-toggler-icon"></span></button>
     <div class="collapse navbar-collapse" id="nav">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item"><a class="nav-link" href="<?= url('index.php') ?>">Katalog</a></li>
-        <?php if ($p): ?><li class="nav-item"><a class="nav-link" href="<?= url('akun.php') ?>">Pesanan Saya</a></li><?php endif; ?>
-      </ul>
-      <div class="d-flex align-items-center gap-2">
-        <a class="btn btn-light position-relative" href="<?= url('keranjang.php') ?>" aria-label="Keranjang">
-          <i class="bi bi-bag"></i>
-          <?php if ($n): ?><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark"><?= $n ?></span><?php endif; ?>
-        </a>
+      <div class="navbar-nav ms-md-4 me-auto">
+        <?= $link('katalog', 'index.php', 'Katalog') ?>
+        <?php if ($p): ?><?= $link('akun', 'akun.php', 'Pesanan saya') ?><?php endif; ?>
+      </div>
+      <div class="navbar-nav align-items-md-center gap-md-1">
+        <?= $link('keranjang', 'keranjang.php', 'Keranjang' . ($n ? ' <span class="mono">(' . $n . ')</span>' : '')) ?>
         <?php if ($p): ?>
-          <a class="btn btn-outline-light" href="<?= url('akun.php') ?>"><i class="bi bi-person-circle"></i> <?= e(explode(' ', $p['nama'])[0]) ?></a>
-          <a class="btn btn-outline-light" href="<?= url('keluar.php') ?>">Keluar</a>
+          <span class="nav-link text-muted d-none d-md-inline">·</span>
+          <?= $link('profil', 'akun.php#profil', e(explode(' ', $p['nama'])[0])) ?>
+          <a class="nav-link" href="<?= url('keluar.php') ?>">Keluar</a>
         <?php else: ?>
-          <a class="btn btn-outline-light" href="<?= url('masuk.php') ?>">Masuk</a>
-          <a class="btn btn-light" href="<?= url('daftar.php') ?>">Daftar</a>
+          <?= $link('masuk', 'masuk.php', 'Masuk') ?>
+          <a class="btn btn-sm btn-hibiscus ms-md-2 my-1 my-md-0" href="<?= url('daftar.php') ?>">Daftar</a>
         <?php endif; ?>
       </div>
     </div>
@@ -98,10 +95,10 @@ function toko_footer(): void
 {
     ?>
 </main>
-<footer class="bg-white border-top py-3 small text-muted">
+<footer class="site-footer py-4 mt-4">
   <div class="container d-flex flex-wrap justify-content-between gap-2">
-    <span>&copy; <?= date('Y') ?> <?= e(config('app_name')) ?> · Sepatu buatan sendiri</span>
-    <span>Retur maks. 7 hari setelah diterima · <a href="<?= url('admin/login.php') ?>" class="text-muted">Admin</a></span>
+    <span>&copy; <?= date('Y') ?> Hibiscus Footwear</span>
+    <span>Tukar ukuran atau refund dalam 7 hari setelah barang diterima · <a href="<?= url('admin/login.php') ?>" class="text-muted">Masuk staf</a></span>
   </div>
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

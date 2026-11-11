@@ -21,7 +21,7 @@ $statusList = ['' => 'Semua', 'menunggu_pembayaran' => 'Menunggu Bayar', 'dibaya
                'dikirim' => 'Dikirim', 'selesai' => 'Selesai', 'dibatalkan' => 'Dibatalkan'];
 
 admin_header('Penjualan', 'penjualan');
-page_title('Penjualan', '<a class="btn btn-hibiscus" href="penjualan_tambah.php"><i class="bi bi-plus-lg"></i> Pesanan Baru</a>');
+page_title('Penjualan', '<a class="btn btn-hibiscus" href="penjualan_tambah.php">Pesanan Baru</a>');
 ?>
 <div class="card">
   <div class="card-body">
@@ -49,7 +49,7 @@ page_title('Penjualan', '<a class="btn btn-hibiscus" href="penjualan_tambah.php"
             <td><?= e($r['kota']) ?></td>
             <td class="num"><?= angka($r['jumlah_pasang']) ?></td>
             <td class="num"><?= rupiah($r['total']) ?></td>
-            <td><?= status_badge($r['status']) ?><?= $r['refund'] > 0 ? ' <span class="badge bg-light text-danger border">refund</span>' : '' ?></td>
+            <td><?= status_badge($r['status']) ?><?= $r['refund'] > 0 ? ' <span class="tag tag-accent ms-1">refund</span>' : '' ?></td>
             <td><?= e($r['metode_bayar'] ? label($r['metode_bayar']) : '-') ?></td>
             <td><?= e($r['no_resi'] ?: '-') ?></td>
           </tr>

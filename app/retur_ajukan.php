@@ -23,14 +23,14 @@ if (is_post()) {
     }
 }
 
-toko_header('Ajukan Retur');
+toko_header('Ajukan Retur', 'akun');
 ?>
 <a class="small" href="pesanan.php?id=<?= e($id) ?>">&larr; Kembali ke pesanan</a>
-<h1 class="h4 my-2">Ajukan Retur · <?= e($pj['no_pesanan']) ?></h1>
+<h1 class="h3 my-2">Ajukan Retur · <?= e($pj['no_pesanan']) ?></h1>
 <p class="text-muted small">Batas pengajuan: <b><?= e(tgl(batas_retur($id))) ?></b>. Isi jumlah pada kolom kondisi yang sesuai.</p>
 <form method="post" class="card card-body">
   <?= csrf_field() ?>
   <?= form_retur_fields($barang) ?>
-  <div><button class="btn btn-hibiscus"><i class="bi bi-send"></i> Kirim Pengajuan</button></div>
+  <div><button class="btn btn-hibiscus">Kirim Pengajuan</button></div>
 </form>
 <?php toko_footer();

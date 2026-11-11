@@ -50,20 +50,20 @@ $st    = $pj['status'];
 $langkah = ['menunggu_pembayaran' => 'Dipesan', 'dibayar' => 'Dibayar', 'dikirim' => 'Dikirim', 'selesai' => 'Selesai'];
 $urutan  = array_search($st, array_keys($langkah), true);
 
-toko_header('Pesanan ' . $pj['no_pesanan']);
+toko_header('Pesanan ' . $pj['no_pesanan'], 'akun');
 ?>
 <a class="small" href="akun.php">&larr; Pesanan saya</a>
 <div class="d-flex flex-wrap justify-content-between align-items-center my-2 gap-2">
-  <h1 class="h4 mb-0">Pesanan <?= e($pj['no_pesanan']) ?></h1>
+  <h1 class="h3 mb-0">Pesanan <?= e($pj['no_pesanan']) ?></h1>
   <?= status_badge($st) ?>
 </div>
 
 <?php if ($st !== 'dibatalkan'): ?>
-<div class="d-flex gap-2 mb-4">
+<ol class="steps list-unstyled my-4" aria-label="Tahap pesanan">
   <?php $i = 0; foreach ($langkah as $k => $t): ?>
-    <div class="flex-fill text-center small py-2 rounded <?= $i <= $urutan ? 'bg-hibiscus text-white' : 'bg-white border text-muted' ?>"><?= e($t) ?></div>
+    <li><div class="<?= $i <= $urutan ? 'done' : '' ?>" <?= $i === $urutan ? 'aria-current="step"' : '' ?>><?= e($t) ?></div></li>
   <?php $i++; endforeach; ?>
-</div>
+</ol>
 <?php endif; ?>
 
 <div class="row g-4">
@@ -72,19 +72,19 @@ toko_header('Pesanan ' . $pj['no_pesanan']);
       <ul class="list-group list-group-flush">
         <?php foreach ($items as $it): ?>
           <li class="list-group-item d-flex justify-content-between">
-            <span><i class="bi <?= ikon_kategori($it['nama_kategori']) ?> text-hibiscus"></i> <?= e($it['nama_produk']) ?> · uk. <?= e($it['ukuran']) ?> × <?= e($it['jumlah']) ?></span>
+            <span><?= e($it['nama_produk']) ?> · uk. <?= e($it['ukuran']) ?> × <?= e($it['jumlah']) ?></span>
             <span><?= rupiah($it['subtotal']) ?></span>
           </li>
         <?php endforeach; ?>
         <li class="list-group-item d-flex justify-content-between"><span>Ongkir</span><span><?= rupiah($pj['ongkir']) ?></span></li>
         <li class="list-group-item d-flex justify-content-between fw-bold"><span>Total</span><span><?= rupiah($pj['total']) ?></span></li>
       </ul>
-      <div class="card-footer bg-white small"><i class="bi bi-geo-alt"></i> <?= e($pj['alamat_kirim']) ?></div>
+      <div class="card-footer small"><span class="text-muted">Dikirim ke</span> <?= e($pj['alamat_kirim']) ?></div>
     </div>
 
     <?php if ($retur): ?>
       <div class="card">
-        <div class="card-header bg-white fw-semibold">Retur</div>
+        <div class="card-header fw-semibold">Retur</div>
         <ul class="list-group list-group-flush">
           <?php foreach ($retur as $r): ?>
             <li class="list-group-item d-flex justify-content-between small">
@@ -100,9 +100,9 @@ toko_header('Pesanan ' . $pj['no_pesanan']);
   <div class="col-lg-5">
     <?php if ($st === 'menunggu_pembayaran'): ?>
       <div class="card mb-3">
-        <div class="card-header bg-white fw-semibold">Pembayaran</div>
+        <div class="card-header fw-semibold">Pembayaran</div>
         <div class="card-body">
-          <p class="small">Total yang harus dibayar (lunas): <b class="text-hibiscus"><?= rupiah($pj['total']) ?></b></p>
+          <p class="small">Total yang harus dibayar (lunas): <b><?= rupiah($pj['total']) ?></b></p>
           <form method="post">
             <?= csrf_field() ?><input type="hidden" name="action" value="bayar">
             <div class="mb-2">
@@ -125,14 +125,14 @@ toko_header('Pesanan ' . $pj['no_pesanan']);
 
     <?php if ($bayar): ?>
       <div class="card mb-3"><div class="card-body small">
-        <i class="bi bi-check-circle text-success"></i> Dibayar <?= rupiah($bayar['jumlah_bayar']) ?> via <?= e(label($bayar['metode'])) ?>
+        Dibayar <?= rupiah($bayar['jumlah_bayar']) ?> via <?= e(label($bayar['metode'])) ?>
         pada <?= e(tgl($bayar['tanggal_bayar'], true)) ?>
       </div></div>
     <?php endif; ?>
 
     <?php if ($kirim): ?>
       <div class="card mb-3"><div class="card-body small">
-        <div><i class="bi bi-truck"></i> <?= e($kirim['kurir'] . ' ' . $kirim['layanan']) ?> · Resi <b><?= e($kirim['no_resi']) ?></b></div>
+        <div><?= e($kirim['kurir'] . ' ' . $kirim['layanan']) ?> · Resi <b><?= e($kirim['no_resi']) ?></b></div>
         <div class="text-muted">Dikirim <?= e(tgl($kirim['tanggal_kirim'])) ?><?= $kirim['tanggal_terima'] ? ' · Diterima ' . e(tgl($kirim['tanggal_terima'])) : '' ?></div>
         <?php if ($st === 'dikirim'): ?>
           <form method="post" class="mt-2" data-confirm="Konfirmasi pesanan sudah diterima?">
@@ -147,7 +147,7 @@ toko_header('Pesanan ' . $pj['no_pesanan']);
       <div class="card"><div class="card-body small">
         <?php if (date('Y-m-d') <= $batas): ?>
           Ukuran tidak pas atau barang bermasalah? Ajukan retur sampai <b><?= e(tgl($batas)) ?></b>.
-          <a class="btn btn-sm btn-outline-hibiscus w-100 mt-2" href="retur_ajukan.php?pesanan=<?= e($id) ?>"><i class="bi bi-arrow-return-left"></i> Ajukan Retur</a>
+          <a class="btn btn-sm btn-outline-hibiscus w-100 mt-2" href="retur_ajukan.php?pesanan=<?= e($id) ?>">Ajukan Retur</a>
         <?php else: ?>
           Batas pengajuan retur sudah lewat (<?= e(tgl($batas)) ?>).
         <?php endif; ?>

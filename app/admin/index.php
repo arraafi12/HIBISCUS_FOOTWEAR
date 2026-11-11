@@ -20,28 +20,22 @@ $pesanan     = rows('SELECT * FROM v_laporan_penjualan ORDER BY tanggal_pesan DE
 $terlaris    = rows('SELECT * FROM v_produk_terlaris ORDER BY peringkat LIMIT 5');
 
 admin_header('Dashboard', 'index');
-page_title('Dashboard');
+page_title('Dashboard', '<span class="text-muted small">' . e(tgl(date('Y-m-d'))) . '</span>');
 
-$stat = function (string $label, string $value, string $icon, string $href = '') {
-    $inner = '<div class="card-body d-flex justify-content-between align-items-center">'
-        . '<div><div class="text-muted small">' . e($label) . '</div><div class="stat-value">' . $value . '</div></div>'
-        . '<i class="bi ' . $icon . ' stat-icon"></i></div>';
-    return '<div class="col-6 col-xl-3"><div class="card stat-card h-100">'
-        . ($href ? '<a class="text-reset text-decoration-none" href="' . e($href) . '">' . $inner . '</a>' : $inner)
-        . '</div></div>';
-};
+$kpi = fn(string $label, string $value, string $href) =>
+    '<a class="kpi" href="' . e($href) . '"><div class="kpi-label">' . e($label) . '</div><div class="kpi-value">' . $value . '</div></a>';
 ?>
-<div class="row g-3 mb-3">
-  <?= $stat('Omzet bersih bulan ini',rupiah($rekap['omzet_bersih']), 'bi-cash-stack', 'laporan.php?jenis=penjualan') ?>
-  <?= $stat('Menunggu pembayaran', angka($hitung['menunggu'] ?? 0), 'bi-hourglass-split', 'penjualan.php?status=menunggu_pembayaran') ?>
-  <?= $stat('Perlu dikirim', angka($hitung['perlu_kirim'] ?? 0), 'bi-box2', 'penjualan.php?status=dibayar') ?>
-  <?= $stat('Retur perlu diproses', angka($retur_baru), 'bi-arrow-return-left', 'retur.php') ?>
+<div class="kpis mb-4">
+  <?= $kpi('Omzet bersih bulan ini', rupiah($rekap['omzet_bersih']), 'laporan.php?jenis=penjualan') ?>
+  <?= $kpi('Menunggu pembayaran', angka($hitung['menunggu'] ?? 0), 'penjualan.php?status=menunggu_pembayaran') ?>
+  <?= $kpi('Perlu dikirim', angka($hitung['perlu_kirim'] ?? 0), 'penjualan.php?status=dibayar') ?>
+  <?= $kpi('Retur perlu diproses', angka($retur_baru), 'retur.php') ?>
 </div>
 
 <div class="row g-3">
   <div class="col-xl-7">
     <div class="card h-100">
-      <div class="card-header bg-white d-flex justify-content-between">
+      <div class="card-header d-flex justify-content-between">
         <span class="fw-semibold">Pesanan terbaru</span><a href="penjualan.php" class="small">Semua</a>
       </div>
       <div class="table-responsive">
@@ -64,18 +58,18 @@ $stat = function (string $label, string $value, string $icon, string $href = '')
   </div>
   <div class="col-xl-5">
     <div class="card h-100">
-      <div class="card-header bg-white d-flex justify-content-between">
+      <div class="card-header d-flex justify-content-between">
         <span class="fw-semibold">Produk terlaris</span><a href="laporan.php?jenis=terlaris" class="small">Laporan</a>
       </div>
       <ul class="list-group list-group-flush">
         <?php foreach ($terlaris as $t): ?>
           <li class="list-group-item d-flex justify-content-between">
-            <span><span class="badge bg-hibiscus me-2"><?= e($t['peringkat']) ?></span><?= e($t['nama_produk']) ?></span>
+            <span><span class="mono text-muted me-2"><?= e(str_pad((string) $t['peringkat'], 2, '0', STR_PAD_LEFT)) ?></span><?= e($t['nama_produk']) ?></span>
             <span class="text-muted"><?= angka($t['total_terjual']) ?> pasang</span>
           </li>
         <?php endforeach; ?>
       </ul>
-      <div class="card-footer bg-white small text-muted">
+      <div class="card-footer small text-muted">
         Produksi berjalan: <b><?= $produksi_jalan ?></b> · Sedang dikirim: <b><?= angka($hitung['dikirim'] ?? 0) ?></b>
       </div>
     </div>
@@ -83,7 +77,7 @@ $stat = function (string $label, string $value, string $icon, string $href = '')
 
   <div class="col-xl-6">
     <div class="card h-100">
-      <div class="card-header bg-white fw-semibold">Stok produk menipis / habis</div>
+      <div class="card-header fw-semibold">Stok produk menipis / habis</div>
       <div class="table-responsive">
         <table class="table table-sm mb-0">
           <thead class="table-light"><tr><th>SKU</th><th>Produk</th><th class="num">Stok</th><th>Status</th></tr></thead>
@@ -100,7 +94,7 @@ $stat = function (string $label, string $value, string $icon, string $href = '')
   </div>
   <div class="col-xl-6">
     <div class="card h-100">
-      <div class="card-header bg-white fw-semibold">Stok bahan baku menipis / habis</div>
+      <div class="card-header fw-semibold">Stok bahan baku menipis / habis</div>
       <div class="table-responsive">
         <table class="table table-sm mb-0">
           <thead class="table-light"><tr><th>Bahan</th><th class="num">Stok</th><th class="num">Minimum</th><th>Status</th></tr></thead>

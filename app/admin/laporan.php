@@ -83,7 +83,7 @@ function jenis_kolom(string $c): string
 }
 
 admin_header($judul, 'lap_' . $jenis);
-page_title($judul, '<button class="btn btn-outline-secondary" onclick="window.print()"><i class="bi bi-printer"></i> Cetak</button>');
+page_title($judul, '<button class="btn btn-outline-secondary" onclick="window.print()">Cetak</button>');
 ?>
 <div class="d-none d-print-block mb-3">
   <h2 class="h5 mb-0"><?= e(config('app_name')) ?></h2>
@@ -107,14 +107,14 @@ page_title($judul, '<button class="btn btn-outline-secondary" onclick="window.pr
     <?php if ($jenis === 'terlaris'): ?>
       <div class="col-auto"><label class="form-label small mb-1">Jumlah peringkat</label><input class="form-control" type="number" min="1" name="limit" value="<?= e($limit) ?>" style="width:110px"></div>
     <?php endif; ?>
-    <div class="col-auto"><button class="btn btn-hibiscus"><i class="bi bi-funnel"></i> Tampilkan</button></div>
+    <div class="col-auto"><button class="btn btn-hibiscus">Tampilkan</button></div>
   </div>
 </form>
 <?php endif; ?>
 
 <?php foreach ($bagian as [$sub, $data, $pakaiTotal, $sumber]): ?>
   <div class="card mb-3">
-    <div class="card-header bg-white d-flex justify-content-between">
+    <div class="card-header d-flex justify-content-between">
       <span class="fw-semibold"><?= e($sub) ?></span>
       <code class="small text-muted d-print-none"><?= e($sumber) ?></code>
     </div>

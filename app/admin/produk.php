@@ -23,7 +23,7 @@ crud_page([
         'aktif'         => ['label' => 'Dijual', 'format' => 'bool'],
     ],
     'row_actions' => fn($r) => '<a class="btn btn-sm btn-outline-secondary" href="produk_ukuran.php?id=' . e($r['id_produk'])
-        . '" title="Ukuran & stok"><i class="bi bi-rulers"></i> Ukuran</a>',
+        . '" title="Ukuran & stok">Ukuran</a>',
     'fields' => [
         'kode_produk' => ['label' => 'Kode Produk', 'required' => true, 'help' => 'Contoh: SNK-003. Dipakai sebagai awalan SKU.'],
         'nama_produk' => ['label' => 'Nama Produk', 'required' => true],

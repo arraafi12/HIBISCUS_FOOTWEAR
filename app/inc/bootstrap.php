@@ -238,23 +238,40 @@ function label(string $s): string
     return strtr(ucwords(str_replace('_', ' ', $s)), ['Qris' => 'QRIS', 'E Wallet' => 'E-Wallet']);
 }
 
+/** Status sebagai titik berwarna + teks (warna hanya penanda, teks tetap terbaca). */
 function status_badge(string $status): string
 {
-    $warna = [
-        'menunggu_pembayaran' => 'warning text-dark',
-        'dibayar'             => 'info text-dark',
-        'dikirim'             => 'primary',
-        'selesai'             => 'success',
-        'dibatalkan'          => 'secondary',
-        'proses'              => 'warning text-dark',
-        'diajukan'            => 'warning text-dark',
-        'diterima'            => 'info text-dark',
-        'ditolak'             => 'danger',
-        'AMAN'                => 'success',
-        'MENIPIS'             => 'warning text-dark',
-        'HABIS'               => 'danger',
-    ][$status] ?? 'light text-dark';
-    return '<span class="badge bg-' . $warna . '">' . e(label($status)) . '</span>';
+    $tone = [
+        'menunggu_pembayaran' => 'warn',
+        'proses'              => 'warn',
+        'diajukan'            => 'warn',
+        'MENIPIS'             => 'warn',
+        'dibayar'             => 'info',
+        'dikirim'             => 'info',
+        'diterima'            => 'info',
+        'selesai'             => 'ok',
+        'AMAN'                => 'ok',
+        'baik'                => 'ok',
+        'ya'                  => 'ok',
+        'ditolak'             => 'bad',
+        'HABIS'               => 'bad',
+        'cacat'               => 'bad',
+        'dibatalkan'          => 'off',
+        'tidak'               => 'off',
+    ][$status] ?? 'off';
+    $teks = ctype_upper(str_replace('_', '', $status)) ? ucfirst(strtolower($status)) : label($status);
+    return '<span class="status status-' . $tone . '">' . e($teks) . '</span>';
+}
+
+/** Tag <link> untuk CSS, font, dan ikon, dipakai semua halaman. */
+function head_assets(): string
+{
+    return '<link rel="preconnect" href="https://fonts.googleapis.com">'
+        . '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+        . '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">'
+        . '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">'
+        . '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">'
+        . '<link rel="stylesheet" href="' . url('assets/app.css') . '">';
 }
 
 function ongkir_untuk(string $kota): int
@@ -268,15 +285,25 @@ function ongkir_untuk(string $kota): int
     return (int) $map['default'];
 }
 
-/** Ikon Bootstrap untuk tiap kategori (dipakai sebagai gambar produk). */
-function ikon_kategori(?string $kategori): string
+/**
+ * Kotak produk tipografis, pengganti foto (database belum menyimpan gambar).
+ * Warna latar netral dipilih tetap per kategori. $size: '' | 'lg' | 'sm'.
+ */
+function produk_tile(string $nama, string $kode, string $kategori, string $size = '', string $tag = ''): string
 {
-    return [
-        'Sneakers'   => 'bi-lightning-charge',
-        'Heels'      => 'bi-gem',
-        'Flat Shoes' => 'bi-flower1',
-        'Sandal'     => 'bi-sun',
-    ][$kategori ?? ''] ?? 'bi-bag-heart';
+    $tetap = ['Sneakers' => '#e1e4dc', 'Heels' => '#eadfd9', 'Flat Shoes' => '#e9e3d3', 'Sandal' => '#dfe3e7'];
+    $tones = ['#ece6dd', '#e6dde3', '#e3e1d6', '#dde4e1'];
+    $tone  = $tetap[$kategori] ?? $tones[hexdec(substr(md5($kategori), 0, 6)) % count($tones)];
+    if ($size === 'sm') {
+        $inisial = implode('', array_map(fn($w) => mb_substr($w, 0, 1), array_slice(explode(' ', $nama), 0, 2)));
+        return '<div class="tile tile-sm" style="--tone:' . $tone . '" aria-hidden="true"><div class="tile-name">' . e($inisial) . '</div></div>';
+    }
+    return '<div class="tile' . ($size ? ' tile-' . $size : '') . '" style="--tone:' . $tone . '">'
+        . '<div class="tile-cat">' . e($kategori) . '</div>'
+        . '<div class="tile-code">' . e($kode) . '</div>'
+        . '<div class="tile-name">' . e($nama) . '</div>'
+        . ($tag ? '<span class="tag tag-accent">' . e($tag) . '</span>' : '')
+        . '</div>';
 }
 
 // ---------------------------------------------------------------------

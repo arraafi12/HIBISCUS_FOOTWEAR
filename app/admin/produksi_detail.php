@@ -57,7 +57,7 @@ $ukuran     = rows('SELECT id_varian, ukuran, sku, stok FROM produk_ukuran WHERE
 $proses     = $pr['status'] === 'proses';
 
 admin_header('Produksi ' . $pr['no_produksi'], 'produksi');
-page_title('Produksi ' . $pr['no_produksi'], '<a class="btn btn-outline-secondary" href="produksi.php"><i class="bi bi-arrow-left"></i> Kembali</a>');
+page_title('Produksi ' . $pr['no_produksi'], '<a class="btn btn-outline-secondary" href="produksi.php">Kembali</a>');
 ?>
 <div class="card mb-3">
   <div class="card-body">
@@ -75,7 +75,7 @@ page_title('Produksi ' . $pr['no_produksi'], '<a class="btn btn-outline-secondar
 <div class="row g-3">
   <div class="col-xl-6">
     <div class="card h-100">
-      <div class="card-header bg-white fw-semibold">1. Pemakaian Bahan Baku</div>
+      <div class="card-header fw-semibold">1. Pemakaian Bahan Baku</div>
       <div class="card-body">
         <table class="table table-sm">
           <thead class="table-light"><tr><th>Bahan</th><th class="num">Jumlah</th><th></th></tr></thead>
@@ -105,7 +105,7 @@ page_title('Produksi ' . $pr['no_produksi'], '<a class="btn btn-outline-secondar
   </div>
   <div class="col-xl-6">
     <div class="card h-100">
-      <div class="card-header bg-white fw-semibold">2. Hasil Produksi per Ukuran</div>
+      <div class="card-header fw-semibold">2. Hasil Produksi per Ukuran</div>
       <div class="card-body">
         <table class="table table-sm">
           <thead class="table-light"><tr><th>Ukuran</th><th>SKU</th><th class="num">Jumlah (pasang)</th><th></th></tr></thead>
@@ -145,7 +145,7 @@ page_title('Produksi ' . $pr['no_produksi'], '<a class="btn btn-outline-secondar
       <?= csrf_field() ?><input type="hidden" name="action" value="selesai">
       <div class="col-auto"><label class="form-label">3. Tanggal selesai</label>
         <input class="form-control" type="date" name="tanggal_selesai" value="<?= date('Y-m-d') ?>" min="<?= e($pr['tanggal_mulai']) ?>"></div>
-      <div class="col-auto"><button class="btn btn-success"><i class="bi bi-check2-circle"></i> Tandai Selesai</button></div>
+      <div class="col-auto"><button class="btn btn-success">Tandai Selesai</button></div>
     </form>
   </div>
 </div>

@@ -34,36 +34,32 @@ if (is_post()) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Masuk Admin · <?= e(config('app_name')) ?></title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="<?= url('assets/app.css') ?>">
+  <title>Masuk Staf · Hibiscus Footwear</title>
+  <?= head_assets() ?>
 </head>
-<body class="d-flex align-items-center min-vh-100 bg-hibiscus">
-  <div class="container" style="max-width: 400px">
-    <div class="card shadow">
-      <div class="card-body p-4">
-        <div class="text-center mb-4">
-          <i class="bi bi-flower2 display-5 text-hibiscus"></i>
-          <h1 class="h5 mt-2 mb-0"><?= e(config('app_name')) ?></h1>
-          <div class="text-muted small">Masuk sebagai admin / pegawai</div>
+<body class="min-vh-100 d-flex flex-column">
+  <header class="topbar py-3">
+    <div class="container"><a class="wordmark" href="<?= url('index.php') ?>">Hibiscus<span>Footwear</span></a></div>
+  </header>
+  <main class="container flex-grow-1 d-flex align-items-center py-5">
+    <div style="width: 100%; max-width: 360px">
+      <div class="eyebrow mb-2">Panel staf</div>
+      <h1 class="h2 mb-4">Masuk</h1>
+      <?php if ($error): ?><div class="alert alert-danger py-2" role="alert"><?= e($error) ?></div><?php endif; ?>
+      <form method="post">
+        <?= csrf_field() ?>
+        <div class="mb-3">
+          <label class="form-label" for="username">Username</label>
+          <input class="form-control" id="username" name="username" value="<?= e(post('username')) ?>" autocomplete="username" required autofocus>
         </div>
-        <?php if ($error): ?><div class="alert alert-danger py-2"><?= e($error) ?></div><?php endif; ?>
-        <form method="post">
-          <?= csrf_field() ?>
-          <div class="mb-3">
-            <label class="form-label" for="username">Username</label>
-            <input class="form-control" id="username" name="username" value="<?= e(post('username')) ?>" required autofocus>
-          </div>
-          <div class="mb-3">
-            <label class="form-label" for="password">Password</label>
-            <input class="form-control" id="password" type="password" name="password" required>
-          </div>
-          <button class="btn btn-hibiscus w-100">Masuk</button>
-        </form>
-        <div class="text-center mt-3"><a class="small" href="<?= url('index.php') ?>">&larr; Kembali ke toko</a></div>
-      </div>
+        <div class="mb-4">
+          <label class="form-label" for="password">Password</label>
+          <input class="form-control" id="password" type="password" name="password" autocomplete="current-password" required>
+        </div>
+        <button class="btn btn-hibiscus w-100">Masuk</button>
+      </form>
+      <p class="small text-muted mt-4 mb-0">Untuk admin, gudang, produksi, dan penjualan. Pelanggan masuk lewat <a href="<?= url('masuk.php') ?>">halaman toko</a>.</p>
     </div>
-  </div>
+  </main>
 </body>
 </html>

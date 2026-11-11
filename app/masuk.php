@@ -30,12 +30,12 @@ if (is_post()) {
 $oldEmail = $_SESSION['old_email'] ?? '';
 unset($_SESSION['old_email']);
 
-toko_header('Masuk');
+toko_header('Masuk', 'masuk');
 ?>
 <div class="mx-auto" style="max-width: 420px">
   <div class="card">
     <div class="card-body p-4">
-      <h1 class="h4 mb-3">Masuk</h1>
+      <h1 class="h3 mb-4">Masuk</h1>
       <form method="post">
         <?= csrf_field() ?>
         <div class="mb-3"><label class="form-label" for="email">Email</label>

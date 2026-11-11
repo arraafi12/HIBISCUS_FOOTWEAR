@@ -44,9 +44,9 @@ $items = rows('SELECT d.*, b.kode_bahan, b.nama_bahan, b.satuan
 
 admin_header('Pembelian ' . $pb['no_faktur'], 'pembelian');
 page_title('Pembelian ' . $pb['no_faktur'],
-    '<button class="btn btn-outline-secondary" onclick="window.print()"><i class="bi bi-printer"></i> Cetak</button>'
+    '<button class="btn btn-outline-secondary" onclick="window.print()">Cetak</button>'
     . delete_button('', ['action' => 'hapus', 'id' => $id],
-        'Hapus seluruh pembelian ini? Stok bahan akan dikurangi kembali.', '<i class="bi bi-trash"></i> Hapus'));
+        'Hapus seluruh pembelian ini? Stok bahan akan dikurangi kembali.', 'Hapus'));
 ?>
 <div class="card">
   <div class="card-body">
