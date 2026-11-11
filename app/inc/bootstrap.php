@@ -48,6 +48,10 @@ function db(): PDO
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES   => false,
             ]);
+            // Samakan collation koneksi dengan database (utf8mb4_unicode_ci, lihat 01_schema.sql).
+            // Tanpa ini, server dengan default utf8mb4_general_ci (mis. XAMPP) memunculkan
+            // error 1267 "Illegal mix of collations" saat teks dibandingkan dengan kolom view.
+            $pdo->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
         } catch (PDOException $e) {
             http_response_code(500);
             echo '<h2>Tidak bisa terhubung ke database</h2>';
