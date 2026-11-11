@@ -16,7 +16,7 @@ if (is_post()) {
         $jml   = (float) ($_POST['jumlah'][$i] ?? 0);
         $harga = (float) ($_POST['harga'][$i] ?? 0);
         if (isset($items[$idb])) {
-            flash('danger', 'Bahan yang sama tidak boleh diinput dua kali dalam satu faktur.');
+            flash('danger', 'Bahan yang sama diinput dua kali dalam satu faktur. Gabungkan jumlahnya dalam satu baris.', 'Gagal menyimpan pembelian');
             $items = null;
             break;
         }
@@ -24,7 +24,7 @@ if (is_post()) {
     }
 
     if ($items === []) {
-        flash('danger', 'Isi minimal satu bahan baku.');
+        flash('danger', 'Belum ada bahan baku yang diisi. Isi minimal satu baris.', 'Gagal menyimpan pembelian');
     } elseif ($items !== null) {
         try {
             db()->beginTransaction();
@@ -40,7 +40,7 @@ if (is_post()) {
             redirect('admin/pembelian_detail.php?id=' . $id);
         } catch (PDOException $e) {
             db()->rollBack();
-            flash('danger', db_error($e));
+            flash('danger', db_error($e), 'Gagal menyimpan pembelian');
         }
     }
     $_SESSION['old'] = $_POST;

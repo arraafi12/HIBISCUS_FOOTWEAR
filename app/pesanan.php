@@ -30,7 +30,7 @@ if (is_post()) {
                 break;
         }
     } catch (Throwable $e) {
-        flash('danger', pesan_error($e));
+        flash('danger', pesan_error($e), ['bayar' => 'Pembayaran gagal', 'batal' => 'Gagal membatalkan pesanan', 'terima' => 'Gagal mengonfirmasi pesanan'][post('action')] ?? null);
     }
     redirect('pesanan.php?id=' . $id);
 }

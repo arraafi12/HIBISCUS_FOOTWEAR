@@ -9,7 +9,7 @@ if (is_post()) {
         case 'tambah':
             $jml = (keranjang()[$idv] ?? 0) + max(1, (int) post('jumlah', 1));
             if ($stok <= 0) {
-                flash('danger', 'Ukuran ini sedang habis.');
+                flash('danger', 'Stok ukuran ini sedang habis.', 'Gagal menambahkan ke keranjang');
             } else {
                 if ($jml > $stok) {
                     $jml = $stok;

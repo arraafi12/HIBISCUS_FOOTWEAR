@@ -34,7 +34,7 @@ if (is_post()) {
                 break;
         }
     } catch (Throwable $e) {
-        flash('danger', pesan_error($e));
+        flash('danger', pesan_error($e), ['bayar' => 'Gagal mencatat pembayaran', 'kirim' => 'Gagal mencatat pengiriman', 'terima' => 'Gagal menandai pesanan diterima', 'batal' => 'Gagal membatalkan pesanan'][post('action')] ?? null);
     }
     redirect('admin/penjualan_detail.php?id=' . $id);
 }

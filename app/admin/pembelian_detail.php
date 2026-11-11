@@ -33,7 +33,7 @@ if (is_post()) {
         db()->commit();
     } catch (PDOException $e) {
         db()->rollBack();
-        flash('danger', db_error($e));
+        flash('danger', db_error($e), ['hapus_item' => 'Gagal menghapus item pembelian', 'hapus' => 'Gagal menghapus pembelian'][post('action')] ?? null);
     }
     redirect('admin/pembelian_detail.php?id=' . $id);
 }

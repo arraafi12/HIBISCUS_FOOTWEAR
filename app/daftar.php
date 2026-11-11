@@ -40,9 +40,7 @@ if (is_post()) {
             $err[] = ($e->errorInfo[1] ?? 0) == 1062 ? 'Email sudah terdaftar. Silakan masuk.' : db_error($e);
         }
     }
-    foreach ($err as $m) {
-        flash('danger', $m);
-    }
+    flash('danger', implode(' ', $err), 'Pendaftaran gagal');
     $_SESSION['old'] = $d;
     redirect('daftar.php');
 }

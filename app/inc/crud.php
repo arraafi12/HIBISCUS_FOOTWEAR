@@ -29,7 +29,7 @@ function crud_page(array $d): void
                 q("DELETE FROM $table WHERE $pk = ?", [$id]);
                 flash('success', $d['title'] . ' berhasil dihapus.');
             } catch (PDOException $e) {
-                flash('danger', db_error($e));
+                flash('danger', db_error($e), 'Gagal menghapus ' . strtolower($d['title']));
             }
             redirect('admin/' . $self);
         }
@@ -65,9 +65,7 @@ function crud_page(array $d): void
         }
 
         if ($errors) {
-            foreach ($errors as $err) {
-                flash('danger', $err);
-            }
+            flash('danger', implode(' ', $errors), 'Gagal menyimpan ' . strtolower($d['title']));
             $_SESSION['old'] = $_POST;
             redirect('admin/' . $self . ($id !== '' ? '?edit=' . urlencode($id) : '?form=1'));
         }
@@ -84,7 +82,7 @@ function crud_page(array $d): void
                 flash('success', $d['title'] . ' berhasil diperbarui.');
             }
         } catch (PDOException $e) {
-            flash('danger', db_error($e));
+            flash('danger', db_error($e), 'Gagal menyimpan ' . strtolower($d['title']));
             $_SESSION['old'] = $_POST;
             redirect('admin/' . $self . ($id !== '' ? '?edit=' . urlencode($id) : '?form=1'));
         }

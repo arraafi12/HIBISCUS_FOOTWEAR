@@ -34,7 +34,7 @@ if (is_post()) {
                 break;
         }
     } catch (PDOException $e) {
-        flash('danger', db_error($e));
+        flash('danger', db_error($e), ['terima' => 'Gagal menerima retur', 'tolak' => 'Gagal menolak retur', 'selesai' => 'Gagal menyelesaikan retur'][post('action')] ?? null);
     }
     redirect('admin/retur_detail.php?id=' . $id);
 }

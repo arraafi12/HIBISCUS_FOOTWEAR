@@ -120,15 +120,71 @@ function db_error(PDOException $e): string
             : 'Data sudah ada (tidak boleh duplikat).';
     }
     if ($code === 1451) {
-        return 'Data tidak bisa dihapus/diubah karena masih dipakai di data lain.';
+        return 'Data ini masih dipakai di transaksi atau data lain, jadi tidak bisa dihapus/diubah.';
     }
     if ($code === 1452) {
-        return 'Data referensi tidak ditemukan.';
+        return 'Data yang dipilih (referensi) tidak ditemukan.';
     }
     if ($code === 4025 || $code === 3819) {
-        return 'Nilai tidak valid (melanggar aturan data): ' . $msg;
+        return pesan_constraint($msg);
     }
-    return 'Terjadi kesalahan database: ' . $msg;
+    if ($code === 1054 || $code === 1146) {
+        // kolom / tabel belum ada: biasanya file SQL tambahan belum di-import
+        $kolom = preg_match("/'([^']+)'/", $msg, $m) ? $m[1] : '';
+        $file  = [
+            'password_hash' => '08_akun_pelanggan.sql',
+            'retur'         => '06_retur.sql',
+            'detail_retur'  => '06_retur.sql',
+        ];
+        $saran = '';
+        foreach ($file as $nama => $sql) {
+            if (str_contains($kolom, $nama)) {
+                $saran = " Import file database/$sql di phpMyAdmin, lalu coba lagi.";
+                break;
+            }
+        }
+        return "Struktur database belum lengkap (\"$kolom\" tidak ditemukan)." . ($saran ?: ' Pastikan semua file di folder database/ sudah di-import berurutan.');
+    }
+    if ($code === 1048) {
+        return preg_match("/Column '([^']+)'/", $msg, $m) ? 'Kolom "' . label($m[1]) . '" wajib diisi.' : 'Ada data wajib yang belum diisi.';
+    }
+    if ($code === 1406) {
+        return preg_match("/column '([^']+)'/", $msg, $m) ? 'Isian "' . label($m[1]) . '" terlalu panjang.' : 'Ada isian yang terlalu panjang.';
+    }
+    if (in_array($code, [1292, 1366, 1265], true)) {
+        return 'Format isian tidak valid (periksa tanggal atau angka).';
+    }
+    return 'Database menolak perintah ini (' . $msg . ').';
+}
+
+/** Terjemahkan pelanggaran CHECK constraint menjadi kalimat biasa. */
+function pesan_constraint(string $msg): string
+{
+    $daftar = [
+        'chk_varian_ukuran'      => 'Ukuran harus di antara 30 dan 50.',
+        'chk_varian_stok'        => 'Stok produk tidak boleh kurang dari 0.',
+        'chk_varian_stokmin'     => 'Stok minimum tidak boleh negatif.',
+        'chk_bahan_stok'         => 'Stok bahan baku tidak boleh kurang dari 0.',
+        'chk_bahan_stokmin'      => 'Stok minimum tidak boleh negatif.',
+        'chk_produk_harga'       => 'Harga jual tidak boleh negatif.',
+        'chk_dpb_jumlah'         => 'Jumlah pembelian harus lebih dari 0.',
+        'chk_dpb_harga'          => 'Harga satuan tidak boleh negatif.',
+        'chk_pakai_jumlah'       => 'Jumlah bahan yang dipakai harus lebih dari 0.',
+        'chk_hasil_jumlah'       => 'Jumlah hasil produksi harus lebih dari 0.',
+        'chk_dpj_jumlah'         => 'Jumlah pesanan harus lebih dari 0.',
+        'chk_dpj_harga'          => 'Harga tidak boleh negatif.',
+        'chk_penjualan_ongkir'   => 'Ongkir tidak boleh negatif.',
+        'chk_produksi_tanggal'   => 'Tanggal selesai tidak boleh sebelum tanggal mulai.',
+        'chk_pengiriman_tanggal' => 'Tanggal terima tidak boleh sebelum tanggal kirim.',
+        'chk_retur_tanggal'      => 'Tanggal selesai retur tidak boleh sebelum tanggal pengajuan.',
+        'chk_dretur_jumlah'      => 'Jumlah barang retur harus lebih dari 0.',
+    ];
+    foreach ($daftar as $nama => $kalimat) {
+        if (str_contains($msg, $nama)) {
+            return $kalimat;
+        }
+    }
+    return 'Nilai yang diisi melanggar aturan data.';
 }
 
 /** Nomor dokumen berikutnya, contoh next_number('produksi','no_produksi','PR-2026-11-') */
@@ -192,17 +248,27 @@ function csrf_check(): void
     }
 }
 
-function flash(string $type, string $message): void
+/**
+ * Simpan notifikasi untuk halaman berikutnya.
+ * $type: success | danger | warning. $judul opsional, default:
+ * Berhasil / Gagal / Perhatian. Pesan 'danger' ditampilkan sebagai "Alasan: ...".
+ */
+function flash(string $type, string $message, ?string $judul = null): void
 {
-    $_SESSION['flash'][] = [$type, $message];
+    $_SESSION['flash'][] = [$type, $message, $judul];
 }
 
 function render_flash(): string
 {
+    $default = ['success' => 'Berhasil', 'danger' => 'Gagal', 'warning' => 'Perhatian', 'info' => 'Info'];
     $html = '';
-    foreach ($_SESSION['flash'] ?? [] as [$type, $msg]) {
-        $html .= '<div class="alert alert-' . e($type) . ' alert-dismissible fade show" role="alert">'
-            . e($msg) . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button></div>';
+    foreach ($_SESSION['flash'] ?? [] as $f) {
+        [$type, $msg] = $f;
+        $judul = $f[2] ?? $default[$type] ?? 'Info';
+        $isi   = $type === 'danger' ? '<span class="alert-reason">Alasan:</span> ' . e($msg) : e($msg);
+        $html .= '<div class="alert alert-' . e($type) . ' alert-dismissible fade show" role="' . ($type === 'danger' ? 'alert' : 'status') . '">'
+            . '<div class="alert-title">' . e($judul) . '</div><div>' . $isi . '</div>'
+            . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button></div>';
     }
     unset($_SESSION['flash']);
     return $html;

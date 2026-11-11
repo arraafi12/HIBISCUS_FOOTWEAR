@@ -8,7 +8,16 @@ if (pelanggan()) {
 if (is_post()) {
     csrf_check();
     $p = row('SELECT * FROM pelanggan WHERE email = ?', [post('email')]);
-    $ok = $p && $p['password_hash'] && cek_password((string) ($_POST['password'] ?? ''), $p['password_hash'], function (string $baru) use ($p) {
+    $_SESSION['old_email'] = post('email');
+    if (!akun_pelanggan_siap()) {
+        flash('danger', 'Fitur akun pelanggan belum aktif karena kolom password belum ada di database. Import file database/08_akun_pelanggan.sql di phpMyAdmin, lalu coba lagi.', 'Gagal masuk');
+        redirect('masuk.php');
+    }
+    if ($p && !$p['password_hash']) {
+        flash('danger', 'Akun ini belum punya password untuk toko online. Minta admin mengisi password di menu Pelanggan.', 'Gagal masuk');
+        redirect('masuk.php');
+    }
+    $ok = $p && cek_password((string) ($_POST['password'] ?? ''), $p['password_hash'], function (string $baru) use ($p) {
         q('UPDATE pelanggan SET password_hash = ? WHERE id_pelanggan = ?', [$baru, $p['id_pelanggan']]);
     });
     if ($ok) {
@@ -23,8 +32,7 @@ if (is_post()) {
         }
         redirect(keranjang() ? 'checkout.php' : 'index.php');
     }
-    flash('danger', 'Email atau password salah.');
-    $_SESSION['old_email'] = post('email');
+    flash('danger', 'Email atau password tidak cocok dengan akun mana pun.', 'Gagal masuk');
     redirect('masuk.php');
 }
 $oldEmail = $_SESSION['old_email'] ?? '';

@@ -3,6 +3,14 @@
 require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/transaksi.php';
 
+/** True jika kolom password pelanggan sudah ada (file 08_akun_pelanggan.sql sudah di-import). */
+function akun_pelanggan_siap(): bool
+{
+    static $siap = null;
+    return $siap ??= (bool) val("SELECT COUNT(*) FROM information_schema.columns
+                                   WHERE table_schema = DATABASE() AND table_name = 'pelanggan' AND column_name = 'password_hash'");
+}
+
 // ---------------------------------------------------------------------
 //  Keranjang belanja (disimpan di sesi): [id_varian => jumlah]
 // ---------------------------------------------------------------------

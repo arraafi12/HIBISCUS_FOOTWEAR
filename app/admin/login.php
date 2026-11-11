@@ -26,7 +26,7 @@ if (is_post()) {
         ];
         redirect('admin/index.php');
     }
-    $error = 'Username atau password salah.';
+    $error = 'Username atau password tidak cocok, atau akun sudah dinonaktifkan.';
 }
 ?>
 <!doctype html>
@@ -45,7 +45,7 @@ if (is_post()) {
     <div style="width: 100%; max-width: 360px">
       <div class="eyebrow mb-2">Panel staf</div>
       <h1 class="h2 mb-4">Masuk</h1>
-      <?php if ($error): ?><div class="alert alert-danger py-2" role="alert"><?= e($error) ?></div><?php endif; ?>
+      <?php if ($error): ?><div class="alert alert-danger py-2" role="alert"><div class="alert-title">Gagal masuk</div><div><span class="alert-reason">Alasan:</span> <?= e($error) ?></div></div><?php endif; ?>
       <form method="post">
         <?= csrf_field() ?>
         <div class="mb-3">

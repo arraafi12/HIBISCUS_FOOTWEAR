@@ -11,7 +11,7 @@ if (is_post()) {
         flash('success', 'Produksi dibuat. Catat pemakaian bahan baku dan hasil per ukuran.');
         redirect('admin/produksi_detail.php?id=' . $id);
     } catch (PDOException $e) {
-        flash('danger', db_error($e));
+        flash('danger', db_error($e), 'Gagal membuat produksi');
         redirect('admin/produksi.php');
     }
 }

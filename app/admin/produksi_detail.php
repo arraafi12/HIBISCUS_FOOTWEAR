@@ -42,7 +42,7 @@ if (is_post()) {
                 break;
         }
     } catch (PDOException $e) {
-        flash('danger', db_error($e));
+        flash('danger', db_error($e), ['tambah_bahan' => 'Gagal mencatat pemakaian bahan', 'hapus_bahan' => 'Gagal menghapus pemakaian bahan', 'tambah_hasil' => 'Gagal mencatat hasil produksi', 'hapus_hasil' => 'Gagal menghapus hasil produksi', 'selesai' => 'Gagal menyelesaikan produksi'][post('action')] ?? null);
     }
     redirect('admin/produksi_detail.php?id=' . $id);
 }

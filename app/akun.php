@@ -7,18 +7,23 @@ if (is_post()) {
     $d = ['nama_pelanggan' => post('nama_pelanggan'), 'no_hp' => post('no_hp'), 'alamat' => post('alamat'),
           'kota' => post('kota'), 'kode_pos' => post('kode_pos')];
     if (in_array('', [$d['nama_pelanggan'], $d['no_hp'], $d['alamat'], $d['kota']], true)) {
-        flash('danger', 'Nama, No. HP, alamat, dan kota wajib diisi.');
+        flash('danger', 'Nama, No. HP, alamat, dan kota wajib diisi.', 'Gagal menyimpan profil');
         redirect('akun.php#profil');
     }
     $pw = (string) ($_POST['password'] ?? '');
     if ($pw !== '' && strlen($pw) < 6) {
-        flash('danger', 'Password baru minimal 6 karakter.');
+        flash('danger', 'Password baru minimal 6 karakter.', 'Gagal menyimpan profil');
         redirect('akun.php#profil');
     }
-    q('UPDATE pelanggan SET nama_pelanggan = ?, no_hp = ?, alamat = ?, kota = ?, kode_pos = ? WHERE id_pelanggan = ?',
-      [$d['nama_pelanggan'], $d['no_hp'], $d['alamat'], $d['kota'], $d['kode_pos'] ?: null, $me['id']]);
-    if ($pw !== '') {
-        q('UPDATE pelanggan SET password_hash = ? WHERE id_pelanggan = ?', [password_hash($pw, PASSWORD_DEFAULT), $me['id']]);
+    try {
+        q('UPDATE pelanggan SET nama_pelanggan = ?, no_hp = ?, alamat = ?, kota = ?, kode_pos = ? WHERE id_pelanggan = ?',
+          [$d['nama_pelanggan'], $d['no_hp'], $d['alamat'], $d['kota'], $d['kode_pos'] ?: null, $me['id']]);
+        if ($pw !== '') {
+            q('UPDATE pelanggan SET password_hash = ? WHERE id_pelanggan = ?', [password_hash($pw, PASSWORD_DEFAULT), $me['id']]);
+        }
+    } catch (PDOException $e) {
+        flash('danger', db_error($e), 'Gagal menyimpan profil');
+        redirect('akun.php#profil');
     }
     $_SESSION['pelanggan']['nama'] = $d['nama_pelanggan'];
     flash('success', 'Profil diperbarui.');

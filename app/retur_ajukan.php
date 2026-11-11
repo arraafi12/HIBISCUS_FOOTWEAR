@@ -18,7 +18,7 @@ if (is_post()) {
         flash('success', 'Retur diajukan. Kirim barang ke gudang kami; tim kami akan memeriksanya.');
         redirect('pesanan.php?id=' . $id);
     } catch (Throwable $e) {
-        flash('danger', pesan_error($e));
+        flash('danger', pesan_error($e), 'Gagal mengajukan retur');
         redirect('retur_ajukan.php?pesanan=' . $id);
     }
 }

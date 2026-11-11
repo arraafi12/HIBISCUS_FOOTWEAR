@@ -62,6 +62,11 @@ tfoot tr { border-top: 1px solid var(--line-strong); }
 .alert-danger { border-color: #b42318; }
 .alert-warning { border-color: #b7791f; }
 .alert-light { border-color: var(--line-strong); }
+.alert-title { font-weight: 600; margin-bottom: .1rem; }
+.alert-danger .alert-title { color: #b42318; }
+.alert-success .alert-title { color: #2f7d4f; }
+.alert-warning .alert-title { color: #8a5a0b; }
+.alert-reason { color: var(--muted); }
 .list-group { --bs-list-group-border-color: var(--line); --bs-list-group-bg: var(--surface); }
 .breadcrumb { font-size: .85rem; --bs-breadcrumb-divider-color: var(--muted); }
 

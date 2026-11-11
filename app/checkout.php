@@ -21,7 +21,7 @@ if (is_post()) {
         flash('success', 'Pesanan berhasil dibuat. Silakan lakukan pembayaran.');
         redirect('pesanan.php?id=' . $id);
     } catch (Throwable $e) {
-        flash('danger', pesan_error($e));
+        flash('danger', pesan_error($e), 'Gagal membuat pesanan');
         redirect('checkout.php');
     }
 }

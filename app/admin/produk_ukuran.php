@@ -39,7 +39,7 @@ if (is_post()) {
         if (db()->inTransaction()) {
             db()->rollBack();
         }
-        flash('danger', db_error($e));
+        flash('danger', db_error($e), ['tambah' => 'Gagal menambah ukuran', 'stok_minimum' => 'Gagal mengubah stok minimum', 'hapus' => 'Gagal menghapus ukuran'][post('action')] ?? null);
     }
     redirect('admin/produk_ukuran.php?id=' . $id);
 }
