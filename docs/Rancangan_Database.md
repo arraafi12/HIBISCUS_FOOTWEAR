@@ -3,6 +3,7 @@
 **Nama Sistem:** Sistem Informasi Penjualan dan Produksi HIBISCUS FOOTWEAR
 **DBMS:** MySQL 8.0+ / MariaDB 10.4+ (XAMPP)
 **Nama database:** `hibiscus_footwear`
+**Aplikasi:** PHP 8 native + Bootstrap 5 (folder `app/`): panel admin dan toko online pelanggan
 
 ---
 
@@ -151,6 +152,7 @@ Keterangan: **PK** = primary key, **FK** = foreign key, **UQ** = unik, **AI** = 
 | id_pelanggan | INT UNSIGNED | PK, AI |
 | nama_pelanggan | VARCHAR(100) | wajib |
 | email | VARCHAR(100) | UQ (dipakai untuk login website) |
+| password_hash | VARCHAR(255) | hash bcrypt untuk login toko (ditambahkan oleh `08_akun_pelanggan.sql`) |
 | no_hp | VARCHAR(20) | wajib |
 | alamat, kota, kode_pos | VARCHAR | alamat utama |
 | terdaftar_pada | TIMESTAMP | otomatis |
@@ -487,7 +489,7 @@ diajukan ──periksa──> diterima ──refund/kirim pengganti──> seles
 
 ## 8. Catatan Perancangan
 
-- **Stok disimpan, bukan dihitung saat dibutuhkan.** Nilai stok di `bahan_baku` dan `produk_ukuran` dijaga oleh trigger. Laporan jadi cepat, dan kebenarannya dibuktikan oleh uji konsistensi di `05_uji_coba.sql` (stok tersimpan = hasil hitung ulang dari semua transaksi).
+- **Stok disimpan, bukan dihitung saat dibutuhkan.** Nilai stok di `bahan_baku` dan `produk_ukuran` dijaga oleh trigger. Laporan jadi cepat, dan kebenarannya dibuktikan oleh uji konsistensi di `09_uji_coba.sql` (stok tersimpan = hasil hitung ulang dari semua transaksi).
 - **Stok produk dikurangi saat pesanan dibuat,** bukan saat dibayar, supaya barang yang sedang dipesan tidak bisa dibeli orang lain. Jika pesanan dibatalkan, stok dikembalikan.
 - **Retur tidak mengubah status pesanan.** Pesanan tetap `selesai`; riwayat retur dilihat di `v_laporan_retur` dan kolom `refund` pada `v_laporan_penjualan`.
 - **Tukar ukuran tidak mengubah pendapatan,** karena harga ukuran pengganti sama (produk yang sama). Penukaran ke produk lain yang harganya berbeda belum didukung.

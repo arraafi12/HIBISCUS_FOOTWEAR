@@ -1,0 +1,49 @@
+:root {
+  --hibiscus: #b0174f;
+  --hibiscus-dark: #8a1040;
+  --hibiscus-soft: #fbe9f0;
+}
+
+body { background: #f6f7f9; }
+
+.bg-hibiscus { background: var(--hibiscus) !important; }
+.text-hibiscus { color: var(--hibiscus) !important; }
+.btn-hibiscus { background: var(--hibiscus); border-color: var(--hibiscus); color: #fff; }
+.btn-hibiscus:hover, .btn-hibiscus:focus { background: var(--hibiscus-dark); border-color: var(--hibiscus-dark); color: #fff; }
+.btn-outline-hibiscus { border-color: var(--hibiscus); color: var(--hibiscus); }
+.btn-outline-hibiscus:hover, .btn-outline-hibiscus.active { background: var(--hibiscus); color: #fff; }
+
+/* ---------- Admin ---------- */
+.sidebar { background: #fff; min-height: calc(100vh - 56px); border-right: 1px solid #e5e7eb; }
+@media (min-width: 992px) { .sidebar { position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto; } }
+.sidebar-group { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: #8b8f98; padding: .9rem .75rem .3rem; }
+.sidebar-link { display: block; padding: .42rem .75rem; border-radius: .4rem; color: #333; text-decoration: none; font-size: .92rem; }
+.sidebar-link:hover { background: var(--hibiscus-soft); color: var(--hibiscus); }
+.sidebar-link.active { background: var(--hibiscus); color: #fff; }
+.sidebar-link i { width: 1.3rem; display: inline-block; }
+
+.card { border: 1px solid #e5e7eb; box-shadow: 0 1px 2px rgba(0,0,0,.03); }
+.stat-card .stat-value { font-size: 1.5rem; font-weight: 700; }
+.stat-card .stat-icon { font-size: 1.8rem; color: var(--hibiscus); opacity: .8; }
+.table > :not(caption) > * > * { vertical-align: middle; }
+.table-sm td, .table-sm th { white-space: nowrap; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---------- Toko ---------- */
+.hero { background: linear-gradient(120deg, var(--hibiscus) 0%, #e05a86 100%); color: #fff; border-radius: 1rem; }
+.product-card { transition: transform .15s, box-shadow .15s; }
+.product-card:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.08); }
+.product-img { aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center;
+  font-size: 3.5rem; color: var(--hibiscus); background: linear-gradient(135deg, var(--hibiscus-soft), #fff); border-radius: .5rem .5rem 0 0; }
+.product-img.lg { font-size: 7rem; border-radius: .75rem; }
+.product-img .badge { font-size: .72rem; }
+.size-option input { display: none; }
+.size-option label { min-width: 3rem; }
+.size-option input:checked + label { background: var(--hibiscus); border-color: var(--hibiscus); color: #fff; }
+.size-option input:disabled + label { opacity: .35; text-decoration: line-through; }
+
+@media print {
+  body { background: #fff; }
+  main { width: 100% !important; }
+  .card { border: 0; box-shadow: none; }
+}
