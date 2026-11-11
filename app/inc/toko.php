@@ -81,7 +81,7 @@ function toko_header(string $title, string $active = ''): void
         <?php if ($p): ?><?= $link('akun', 'akun.php', 'Pesanan saya') ?><?php endif; ?>
       </div>
       <div class="navbar-nav align-items-md-center gap-md-1">
-        <?= $link('keranjang', 'keranjang.php', 'Keranjang' . ($n ? ' <span class="mono">(' . $n . ')</span>' : '')) ?>
+        <?= $link('keranjang', 'keranjang.php', 'Keranjang' . ($n ? ' <span class="mono cart-count">(' . $n . ')</span>' : '')) ?>
         <?php if ($p): ?>
           <span class="nav-link text-muted d-none d-md-inline">·</span>
           <?= $link('profil', 'akun.php#profil', e(explode(' ', $p['nama'])[0])) ?>
