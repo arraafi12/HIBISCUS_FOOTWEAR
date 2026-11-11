@@ -182,14 +182,13 @@ page_title('Pesanan ' . $pj['no_pesanan'],
       </div>
     </div>
 
-    <!-- 3. Retur / Batal -->
+    <!-- 3. Info retur (retur diajukan pelanggan dari toko, admin hanya memproses) / Batal -->
     <?php if ($st === 'selesai' && $batas): ?>
-      <div class="card mb-3"><div class="card-body">
+      <div class="card mb-3"><div class="card-body small text-muted">
         <?php if (date('Y-m-d') <= $batas): ?>
-          <a class="btn btn-sm btn-outline-hibiscus w-100" href="retur_tambah.php?penjualan=<?= e($id) ?>">Ajukan Retur</a>
-          <div class="small text-muted mt-1">Batas retur: <?= e(tgl($batas)) ?></div>
+          Pelanggan masih bisa mengajukan retur dari toko online sampai <b><?= e(tgl($batas)) ?></b>.
         <?php else: ?>
-          <span class="small text-muted">Batas retur sudah lewat (<?= e(tgl($batas)) ?>).</span>
+          Batas pengajuan retur sudah lewat (<?= e(tgl($batas)) ?>).
         <?php endif; ?>
       </div></div>
     <?php endif; ?>

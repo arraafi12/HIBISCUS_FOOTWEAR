@@ -15,8 +15,8 @@ admin_header('Retur', 'retur');
 page_title('Retur Barang');
 ?>
 <div class="alert alert-light border small">
-  Retur diajukan dari halaman detail pesanan berstatus <b>selesai</b> (maksimal 7 hari setelah diterima),
-  baik oleh admin maupun oleh pelanggan di toko online.
+  Retur diajukan oleh <b>pelanggan</b> dari toko online untuk pesanan berstatus selesai (maksimal 7 hari setelah diterima).
+  Di sini admin memeriksa barang lalu <b>menerima</b> atau <b>menolak</b>, kemudian menandai <b>selesai</b> setelah refund/barang pengganti dikirim.
 </div>
 <div class="card">
   <div class="card-body">

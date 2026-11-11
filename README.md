@@ -102,7 +102,7 @@ Pelanggan baru bisa mendaftar sendiri lewat menu **Daftar** di toko.
 | Pembelian bahan baku (banyak baris per faktur) | Checkout dengan ongkir otomatis per kota |
 | Produksi: pemakaian bahan, hasil per ukuran, tandai selesai | Pembayaran lunas (simulasi), batalkan pesanan |
 | Penjualan: input pesanan, catat bayar, kirim, diterima, batal | Lacak status pesanan, konfirmasi diterima |
-| Retur: ajukan, terima/tolak, selesai | Ajukan retur (tukar ukuran/refund) maks. 7 hari |
+| Retur: proses pengajuan pelanggan (terima/tolak, selesai) | Ajukan retur (tukar ukuran/refund) maks. 7 hari |
 | 7 laporan dengan filter periode dan tombol cetak | Profil & ganti password |
 
 Semua aturan bisnis (stok, lunas, alur status, batas retur) tetap dijaga oleh trigger database. Aplikasi menampilkan pesan dari trigger apa adanya, misalnya *"Stok SNK-001-38 tidak cukup: tersedia 2 pasang, dipesan 5 pasang."*
