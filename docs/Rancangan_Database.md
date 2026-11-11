@@ -18,6 +18,7 @@ HIBISCUS FOOTWEAR adalah brand sepatu milik sendiri. Perusahaan membeli bahan ba
 - Persediaan bahan baku dan persediaan produk jadi dikelola terpisah.
 - Pembayaran dilakukan satu kali dan harus lunas, sebelum pesanan dikirim.
 - Setiap transaksi dicatat oleh pengguna (admin/pegawai) yang login ke sistem.
+- Pelanggan dapat mengajukan retur paling lambat 7 hari setelah barang diterima, dengan penyelesaian berupa refund atau tukar ukuran.
 
 ---
 
@@ -35,6 +36,7 @@ HIBISCUS FOOTWEAR adalah brand sepatu milik sendiri. Perusahaan membeli bahan ba
 | 8 | Tidak ada laporan stok produk jadi, dan produk terlaris tidak dirinci per ukuran | Tambah **Laporan Stok Produk Jadi** dan laporan **Produk Terlaris per Ukuran** |
 | 9 | Format dokumen rusak (tabel berantakan, poin menempel) | Dokumen ditulis ulang dalam Markdown yang rapi, ditambah kamus data dan ERD |
 | 10 | Harga di detail penjualan bisa ikut berubah ketika harga produk diubah | `harga_satuan` di Detail Penjualan disimpan sebagai **snapshot** saat transaksi |
+| 11 | Retur barang tidak ditangani | Tambah transaksi **Retur** dan **Detail Retur** (refund / tukar ukuran, kondisi baik / cacat) beserta **Laporan Retur**; omzet dan produk terlaris dihitung bersih setelah retur |
 
 ---
 
@@ -52,7 +54,7 @@ HIBISCUS FOOTWEAR adalah brand sepatu milik sendiri. Perusahaan membeli bahan ba
 | M6 | `pelanggan` | Pembeli yang terdaftar di website |
 | M7 | `pengguna` | Admin/pegawai yang login dan mencatat transaksi |
 
-### 3.2 File Transaksi (9 tabel)
+### 3.2 File Transaksi (11 tabel)
 
 | No | Tabel | Fungsi | Pengaruh ke stok |
 |---|---|---|---|
@@ -65,8 +67,10 @@ HIBISCUS FOOTWEAR adalah brand sepatu milik sendiri. Perusahaan membeli bahan ba
 | T7 | `detail_penjualan` | Produk, ukuran, jumlah, dan harga per pesanan | Stok produk **−** |
 | T8 | `pembayaran` | Pembayaran lunas satu kali per pesanan | – |
 | T9 | `pengiriman` | Kurir, nomor resi, tanggal kirim dan terima | – |
+| T10 | `retur` | Header pengajuan retur (pesanan, jenis refund/tukar, alasan, status) | Diterima → stok diproses |
+| T11 | `detail_retur` | Ukuran yang dikembalikan, kondisi, jumlah, ukuran pengganti | Baik → stok **+**; pengganti → stok **−** |
 
-### 3.3 File Report (6 laporan)
+### 3.3 File Report (7 laporan)
 
 Laporan tidak dibuat sebagai tabel. Laporan dihasilkan oleh **VIEW** dan **STORED PROCEDURE** dari data master dan transaksi.
 
@@ -78,8 +82,11 @@ Laporan tidak dibuat sebagai tabel. Laporan dihasilkan oleh **VIEW** dan **STORE
 | 4 | Laporan Produksi | `v_laporan_produksi`, `v_rekap_produksi_bulanan` | `sp_laporan_produksi(awal, akhir)` |
 | 5 | Laporan Penjualan | `v_laporan_penjualan`, `v_rekap_penjualan_bulanan` | `sp_laporan_penjualan(awal, akhir)` |
 | 6 | Laporan Produk Terlaris | `v_produk_terlaris`, `v_produk_terlaris_per_ukuran` | `sp_produk_terlaris(awal, akhir, jumlah)` |
+| 7 | Laporan Retur | `v_laporan_retur`, `v_rekap_retur_bulanan` | `sp_laporan_retur(awal, akhir)` |
 
-Omzet dan produk terlaris hanya menghitung pesanan berstatus `dibayar`, `dikirim`, atau `selesai`. Pesanan yang belum dibayar atau dibatalkan tidak dihitung.
+- Omzet dan produk terlaris hanya menghitung pesanan berstatus `dibayar`, `dikirim`, atau `selesai`. Pesanan yang belum dibayar atau dibatalkan tidak dihitung.
+- **Omzet bersih** = omzet − refund. Refund dicatat pada bulan retur berstatus `selesai`, yaitu saat uang dikembalikan.
+- **Produk terlaris** dihitung bersih. Barang yang diretur (status `diterima`/`selesai`) dikurangkan, dan ukuran pengganti hasil tukar ikut dihitung sebagai terjual. Perhitungan ini memakai view bantu `v_mutasi_penjualan`.
 
 ---
 
@@ -248,6 +255,32 @@ Keterangan: **PK** = primary key, **FK** = foreign key, **UQ** = unik, **AI** = 
 | tanggal_terima | DATE | diisi saat pesanan diterima, ≥ tanggal_kirim |
 | id_pengguna | INT UNSIGNED | FK → pengguna (petugas kirim) |
 
+### T10. `retur`
+| Kolom | Tipe | Keterangan |
+|---|---|---|
+| id_retur | INT UNSIGNED | PK, AI |
+| no_retur | VARCHAR(30) | UQ |
+| id_penjualan | INT UNSIGNED | FK → penjualan (harus berstatus `selesai`) |
+| tanggal_pengajuan | DATE | maksimal 7 hari setelah `pengiriman.tanggal_terima` |
+| jenis | ENUM | `refund`, `tukar` |
+| alasan | VARCHAR(255) | wajib |
+| status | ENUM | `diajukan`, `diterima`, `ditolak`, `selesai` |
+| total_refund | DECIMAL(14,2) | **otomatis** = Σ subtotal detail (jenis refund); 0 untuk tukar |
+| tanggal_selesai | DATE | otomatis hari ini jika kosong saat selesai |
+| id_pengguna | INT UNSIGNED | FK → pengguna (petugas pemeriksa), wajib saat diterima |
+| catatan | VARCHAR(255) | opsional |
+
+### T11. `detail_retur`
+| Kolom | Tipe | Keterangan |
+|---|---|---|
+| id_retur | INT UNSIGNED | PK, FK → retur |
+| id_varian | INT UNSIGNED | PK, FK → produk_ukuran (harus ada di pesanan) |
+| kondisi | ENUM | PK; `baik` (kembali ke stok) atau `cacat` (tidak kembali ke stok) |
+| jumlah | INT | > 0; total retur kumulatif ≤ jumlah dibeli |
+| harga_satuan | DECIMAL(12,2) | otomatis = harga saat dibeli |
+| subtotal | DECIMAL(14,2) | kolom terhitung = jumlah × harga_satuan |
+| id_varian_pengganti | INT UNSIGNED | FK → produk_ukuran; wajib jika `tukar`, harus produk yang sama |
+
 ---
 
 ## 5. Relasi dan ERD
@@ -265,6 +298,8 @@ Keterangan: **PK** = primary key, **FK** = foreign key, **UQ** = unik, **AI** = 
 | penjualan – detail_penjualan – produk_ukuran | M : N (melalui detail) |
 | penjualan – pembayaran | 1 : 0..1 |
 | penjualan – pengiriman | 1 : 0..1 |
+| penjualan – retur | 1 : N |
+| retur – detail_retur – produk_ukuran | M : N (melalui detail; ditambah relasi ke ukuran pengganti) |
 | pengguna – pembelian / produksi / pengiriman | 1 : N |
 
 ```mermaid
@@ -287,6 +322,10 @@ erDiagram
     PENGGUNA ||--o{ PEMBELIAN : mencatat
     PENGGUNA ||--o{ PRODUKSI : "bertanggung jawab"
     PENGGUNA ||--o{ PENGIRIMAN : mengirim
+    PENJUALAN ||--o{ RETUR : diretur
+    RETUR ||--|{ DETAIL_RETUR : berisi
+    PRODUK_UKURAN ||--o{ DETAIL_RETUR : dikembalikan
+    PENGGUNA ||--o{ RETUR : memeriksa
 
     KATEGORI {
         int id_kategori PK
@@ -378,6 +417,21 @@ erDiagram
         int id_penjualan FK
         string no_resi
     }
+    RETUR {
+        int id_retur PK
+        string no_retur
+        int id_penjualan FK
+        string jenis
+        string status
+        decimal total_refund
+    }
+    DETAIL_RETUR {
+        int id_retur PK
+        int id_varian PK
+        string kondisi PK
+        int jumlah
+        int id_varian_pengganti FK
+    }
 ```
 
 ---
@@ -395,7 +449,10 @@ erDiagram
 | 7 | Pesanan dikirim | `pengiriman` | Ditolak jika belum dibayar; status → `dikirim` |
 | 8 | Pesanan diterima | `pengiriman.tanggal_terima` | Status → `selesai` |
 | 9 | Pesanan dibatalkan (sebelum dikirim) | `penjualan.status = 'dibatalkan'` | Stok produk dikembalikan |
-| 10 | Membuat laporan | VIEW dan PROCEDURE | – |
+| 10 | Pelanggan mengajukan retur (≤ 7 hari) | `retur`, `detail_retur` | Validasi pesanan, batas waktu, jumlah; harga & refund dihitung |
+| 11 | Gudang menerima barang retur | `retur.status = 'diterima'` | Barang baik → stok +; ukuran pengganti → stok − |
+| 12 | Refund ditransfer / pengganti dikirim | `retur.status = 'selesai'` | Refund mengurangi omzet bulan itu |
+| 13 | Membuat laporan | VIEW dan PROCEDURE | – |
 
 **Alur status pesanan:**
 
@@ -403,6 +460,14 @@ erDiagram
 menunggu_pembayaran ──bayar──> dibayar ──kirim──> dikirim ──diterima──> selesai
         │                         │
         └──────── batal ──────────┴──> dibatalkan (stok dikembalikan)
+```
+
+**Alur status retur** (hanya untuk pesanan `selesai`, maksimal 7 hari setelah diterima):
+
+```
+diajukan ──periksa──> diterima ──refund/kirim pengganti──> selesai
+    │
+    └──────────────> ditolak (stok tidak berubah)
 ```
 
 ---
@@ -415,7 +480,8 @@ menunggu_pembayaran ──bayar──> dibayar ──kirim──> dikirim ──
 4. **Alur status pesanan dijaga.** Status tidak bisa melompat, misalnya dari `menunggu_pembayaran` langsung ke `selesai`. Pesanan yang sudah dikirim tidak bisa dibatalkan.
 5. **Item pesanan terkunci setelah dibayar.** Item tidak bisa ditambah atau dihapus setelah pesanan dibayar.
 6. **Produksi valid.** Ukuran yang dicatat harus milik produk yang diproduksi. Produksi hanya bisa `selesai` jika pemakaian bahan dan hasil sudah dicatat. Produksi yang sudah selesai tidak bisa dibuka kembali.
-7. **Data master yang dipakai transaksi tidak bisa dihapus.** Semua foreign key memakai `ON DELETE RESTRICT`; untuk menonaktifkan produk, kolom `aktif` diubah ke 0.
+7. **Retur terkendali.** Retur hanya untuk pesanan `selesai`, paling lambat 7 hari setelah diterima, dengan jumlah kumulatif tidak melebihi yang dibeli. Tukar hanya boleh ke ukuran lain dari produk yang sama, dan stok ukuran pengganti harus cukup. Retur yang sudah diproses tidak bisa diubah atau dihapus.
+8. **Data master yang dipakai transaksi tidak bisa dihapus.** Semua foreign key memakai `ON DELETE RESTRICT`; untuk menonaktifkan produk, kolom `aktif` diubah ke 0.
 
 ---
 
@@ -423,4 +489,5 @@ menunggu_pembayaran ──bayar──> dibayar ──kirim──> dikirim ──
 
 - **Stok disimpan, bukan dihitung saat dibutuhkan.** Nilai stok di `bahan_baku` dan `produk_ukuran` dijaga oleh trigger. Laporan jadi cepat, dan kebenarannya dibuktikan oleh uji konsistensi di `05_uji_coba.sql` (stok tersimpan = hasil hitung ulang dari semua transaksi).
 - **Stok produk dikurangi saat pesanan dibuat,** bukan saat dibayar, supaya barang yang sedang dipesan tidak bisa dibeli orang lain. Jika pesanan dibatalkan, stok dikembalikan.
-- **Retur barang** setelah pesanan selesai belum ditangani. Fitur ini dapat menjadi pengembangan berikutnya (tabel `retur` dan `detail_retur`).
+- **Retur tidak mengubah status pesanan.** Pesanan tetap `selesai`; riwayat retur dilihat di `v_laporan_retur` dan kolom `refund` pada `v_laporan_penjualan`.
+- **Tukar ukuran tidak mengubah pendapatan,** karena harga ukuran pengganti sama (produk yang sama). Penukaran ke produk lain yang harganya berbeda belum didukung.

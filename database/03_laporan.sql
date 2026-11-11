@@ -18,6 +18,10 @@
 --  6. Laporan Produk Terlaris    v_produk_terlaris                   sp_produk_terlaris
 --                                v_produk_terlaris_per_ukuran
 --
+--  CATATAN: setelah file 06_retur.sql dijalankan, laporan penjualan dan
+--  produk terlaris diganti dengan versi yang memperhitungkan retur, dan
+--  ditambah laporan ke-7 (Laporan Retur).
+--
 --  Penjualan yang dihitung sebagai omzet = status dibayar/dikirim/selesai
 --  (pesanan belum dibayar dan yang dibatalkan TIDAK dihitung).
 -- =====================================================================
