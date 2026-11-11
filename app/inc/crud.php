@@ -141,7 +141,8 @@ function crud_list(array $d): void
                 <td><?= $i + 1 ?></td>
                 <?php foreach ($d['columns'] as $col => $c): $f = $c['format'] ?? null; ?>
                   <td class="<?= in_array($f, ['rupiah', 'angka'], true) ? 'num' : '' ?>"><?php
-                    if (is_callable($f))       echo $f($r);
+                    // hanya closure yang dipanggil; string 'rupiah'/'angka' adalah nama format, bukan fungsi
+                    if ($f instanceof Closure) echo $f($r);
                     elseif ($f === 'rupiah')   echo rupiah($r[$col]);
                     elseif ($f === 'angka')    echo angka($r[$col]);
                     elseif ($f === 'bool')     echo status_badge($r[$col] ? 'ya' : 'tidak');

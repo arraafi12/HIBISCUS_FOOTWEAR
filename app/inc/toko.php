@@ -41,7 +41,7 @@ function keranjang_detail(): array
         return [];
     }
     $in = implode(',', array_fill(0, count($k), '?'));
-    $data = rows("SELECT pu.id_varian, pu.ukuran, pu.sku, pu.stok, p.id_produk, p.nama_produk, p.harga_jual, p.aktif, k.nama_kategori
+    $data = rows("SELECT pu.id_varian, pu.ukuran, pu.sku, pu.stok, p.id_produk, p.kode_produk, p.nama_produk, p.harga_jual, p.aktif, k.nama_kategori, " . sql_foto_versi('p') . " AS foto_versi
                     FROM produk_ukuran pu JOIN produk p ON p.id_produk = pu.id_produk
                     JOIN kategori k ON k.id_kategori = p.id_kategori
                    WHERE pu.id_varian IN ($in)", array_keys($k));

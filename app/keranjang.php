@@ -73,7 +73,7 @@ toko_header('Keranjang', 'keranjang');
         <?php foreach ($isi as $i): ?>
           <li class="list-group-item py-3">
             <div class="d-flex gap-3 align-items-center">
-              <?= produk_tile($i['nama_produk'], '', $i['nama_kategori'], 'sm') ?>
+              <?= produk_media($i, 'sm') ?>
               <div class="flex-fill">
                 <a class="fw-semibold text-reset" href="produk.php?id=<?= e($i['id_produk']) ?>"><?= e($i['nama_produk']) ?></a>
                 <div class="small text-muted">Ukuran <?= e($i['ukuran']) ?> · <?= rupiah($i['harga_jual']) ?> · stok <?= e($i['stok']) ?></div>

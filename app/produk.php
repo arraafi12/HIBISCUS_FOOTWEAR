@@ -2,7 +2,7 @@
 require __DIR__ . '/inc/toko.php';
 
 $id = (int) get('id');
-$p = row('SELECT p.*, k.nama_kategori FROM produk p JOIN kategori k ON k.id_kategori = p.id_kategori WHERE p.id_produk = ? AND p.aktif = 1', [$id]);
+$p = row('SELECT p.*, k.nama_kategori, ' . sql_foto_versi('p') . ' AS foto_versi FROM produk p JOIN kategori k ON k.id_kategori = p.id_kategori WHERE p.id_produk = ? AND p.aktif = 1', [$id]);
 if (!$p) {
     flash('warning', 'Produk tidak ditemukan.');
     redirect('index.php');
@@ -20,7 +20,7 @@ toko_header($p['nama_produk'], 'katalog');
 
 <div class="row g-4 g-lg-5">
   <div class="col-md-6">
-    <?= produk_tile($p['nama_produk'], $p['kode_produk'], $p['nama_kategori'], 'lg') ?>
+    <?= produk_media($p, 'lg') ?>
   </div>
   <div class="col-md-6 col-lg-5">
     <div class="eyebrow"><?= e($p['nama_kategori']) ?> · <span class="mono"><?= e($p['kode_produk']) ?></span></div>

@@ -1,7 +1,7 @@
 -- =====================================================================
 --  HIBISCUS FOOTWEAR
---  File 09 : Uji coba (laporan, aturan bisnis, konsistensi stok)
---  OPSIONAL - tidak wajib di-import. Jalankan SETELAH file 01-08.
+--  File 99 : Uji coba (laporan, aturan bisnis, konsistensi stok)
+--  OPSIONAL - tidak wajib di-import. Jalankan SETELAH semua file lain (01-09).
 --  File ini TIDAK mengubah data: semua uji dijalankan di dalam
 --  transaksi lalu di-ROLLBACK.
 -- =====================================================================

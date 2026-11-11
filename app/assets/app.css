@@ -148,6 +148,10 @@ tfoot tr { border-top: 1px solid var(--line-strong); }
 .tile-sm .tile-name { font-size: 1.15rem; max-width: none; }
 .tile .tag { position: absolute; left: .9rem; bottom: .9rem; }
 .tile:has(.tag) .tile-name { margin-bottom: 1.8rem; }
+.tile-photo { padding: 0; background: var(--surface); border: 1px solid var(--line); }
+.tile-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tile-photo.tile-sm { border-radius: 4px; }
+.thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 3px; border: 1px solid var(--line); display: block; }
 
 .product { display: block; color: var(--ink); text-decoration: none; }
 .product:hover .tile { outline: 1px solid var(--ink); outline-offset: -1px; }

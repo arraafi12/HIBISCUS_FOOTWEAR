@@ -38,12 +38,13 @@ HIBISCUS FOOTWEAR adalah brand sepatu milik sendiri. Perusahaan membeli bahan ba
 | 9 | Format dokumen rusak (tabel berantakan, poin menempel) | Dokumen ditulis ulang dalam Markdown yang rapi, ditambah kamus data dan ERD |
 | 10 | Harga di detail penjualan bisa ikut berubah ketika harga produk diubah | `harga_satuan` di Detail Penjualan disimpan sebagai **snapshot** saat transaksi |
 | 11 | Retur barang tidak ditangani | Tambah transaksi **Retur** dan **Detail Retur** (refund / tukar ukuran, kondisi baik / cacat) beserta **Laporan Retur**; omzet dan produk terlaris dihitung bersih setelah retur |
+| 12 | Produk tidak punya gambar | Tambah tabel **Produk Foto**: satu foto per produk disimpan sebagai BLOB, diunggah admin dan ditampilkan di toko |
 
 ---
 
 ## 3. Daftar Entitas
 
-### 3.1 File Master (7 tabel)
+### 3.1 File Master (8 tabel)
 
 | No | Tabel | Fungsi |
 |---|---|---|
@@ -54,6 +55,7 @@ HIBISCUS FOOTWEAR adalah brand sepatu milik sendiri. Perusahaan membeli bahan ba
 | M5 | `supplier` | Pemasok bahan baku |
 | M6 | `pelanggan` | Pembeli yang terdaftar di website |
 | M7 | `pengguna` | Admin/pegawai yang login dan mencatat transaksi |
+| M8 | `produk_foto` | Foto utama produk, disimpan sebagai data biner (BLOB) |
 
 ### 3.2 File Transaksi (11 tabel)
 
@@ -166,6 +168,18 @@ Keterangan: **PK** = primary key, **FK** = foreign key, **UQ** = unik, **AI** = 
 | nama_lengkap | VARCHAR(100) | wajib |
 | peran | ENUM | admin, gudang, produksi, penjualan |
 | aktif | TINYINT(1) | 1 = akun aktif |
+
+### M8. `produk_foto` (file `09_foto_produk.sql`)
+| Kolom | Tipe | Keterangan |
+|---|---|---|
+| id_produk | INT UNSIGNED | PK, FK → produk (ON DELETE CASCADE); satu foto per produk |
+| foto | MEDIUMBLOB | isi file gambar dalam bentuk **biner** |
+| tipe_mime | VARCHAR(30) | `image/jpeg`, `image/png`, atau `image/webp` (CHECK) |
+| ukuran_byte | INT UNSIGNED | 1 – 921.600 byte (maks. 900 KB, CHECK) |
+| lebar, tinggi | SMALLINT UNSIGNED | dimensi gambar dalam piksel |
+| diunggah_pada | TIMESTAMP | otomatis; dipakai juga sebagai versi cache gambar |
+
+Foto dipisah dari tabel `produk` agar query katalog tidak ikut membaca data biner yang besar. Aplikasi membaca BLOB lewat `app/foto.php?id=<id_produk>` dan mengirimnya ke browser dengan `Content-Type` sesuai `tipe_mime`. Batas 900 KB mengikuti `max_allowed_packet` bawaan XAMPP (1 MB); foto besar dikecilkan di browser sebelum diunggah.
 
 ### T1. `pembelian`
 | Kolom | Tipe | Keterangan |
@@ -300,6 +314,7 @@ Keterangan: **PK** = primary key, **FK** = foreign key, **UQ** = unik, **AI** = 
 | penjualan – detail_penjualan – produk_ukuran | M : N (melalui detail) |
 | penjualan – pembayaran | 1 : 0..1 |
 | penjualan – pengiriman | 1 : 0..1 |
+| produk – produk_foto | 1 : 0..1 |
 | penjualan – retur | 1 : N |
 | retur – detail_retur – produk_ukuran | M : N (melalui detail; ditambah relasi ke ukuran pengganti) |
 | pengguna – pembelian / produksi / pengiriman | 1 : N |
@@ -328,6 +343,7 @@ erDiagram
     RETUR ||--|{ DETAIL_RETUR : berisi
     PRODUK_UKURAN ||--o{ DETAIL_RETUR : dikembalikan
     PENGGUNA ||--o{ RETUR : memeriksa
+    PRODUK ||--o| PRODUK_FOTO : "memiliki foto"
 
     KATEGORI {
         int id_kategori PK
@@ -414,6 +430,12 @@ erDiagram
         int id_penjualan FK
         decimal jumlah_bayar
     }
+    PRODUK_FOTO {
+        int id_produk PK
+        blob foto
+        string tipe_mime
+        int ukuran_byte
+    }
     PENGIRIMAN {
         int id_pengiriman PK
         int id_penjualan FK
@@ -489,7 +511,7 @@ diajukan ──periksa──> diterima ──refund/kirim pengganti──> seles
 
 ## 8. Catatan Perancangan
 
-- **Stok disimpan, bukan dihitung saat dibutuhkan.** Nilai stok di `bahan_baku` dan `produk_ukuran` dijaga oleh trigger. Laporan jadi cepat, dan kebenarannya dibuktikan oleh uji konsistensi di `09_uji_coba.sql` (stok tersimpan = hasil hitung ulang dari semua transaksi).
+- **Stok disimpan, bukan dihitung saat dibutuhkan.** Nilai stok di `bahan_baku` dan `produk_ukuran` dijaga oleh trigger. Laporan jadi cepat, dan kebenarannya dibuktikan oleh uji konsistensi di `99_uji_coba.sql` (stok tersimpan = hasil hitung ulang dari semua transaksi).
 - **Stok produk dikurangi saat pesanan dibuat,** bukan saat dibayar, supaya barang yang sedang dipesan tidak bisa dibeli orang lain. Jika pesanan dibatalkan, stok dikembalikan.
 - **Retur tidak mengubah status pesanan.** Pesanan tetap `selesai`; riwayat retur dilihat di `v_laporan_retur` dan kolom `refund` pada `v_laporan_penjualan`.
 - **Tukar ukuran tidak mengubah pendapatan,** karena harga ukuran pengganti sama (produk yang sama). Penukaran ke produk lain yang harganya berbeda belum didukung.

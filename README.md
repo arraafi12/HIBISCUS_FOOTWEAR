@@ -2,7 +2,7 @@
 
 **Sistem Informasi Penjualan dan Produksi HIBISCUS FOOTWEAR**, sebuah brand sepatu yang memproduksi sendiri dan berjualan online. Terdiri dari database MySQL/MariaDB dan aplikasi web PHP (panel admin + toko online pelanggan).
 
-- 7 tabel master, 11 tabel transaksi, dan 7 laporan (VIEW + STORED PROCEDURE)
+- 8 tabel master (termasuk foto produk), 11 tabel transaksi, dan 7 laporan (VIEW + STORED PROCEDURE)
 - Stok bahan baku dan stok produk jadi **per ukuran** diperbarui otomatis oleh trigger
 - Aturan bisnis dijaga langsung oleh database: pembayaran harus lunas, stok tidak boleh minus, dan status pesanan tidak bisa melompat
 - Retur barang (refund atau tukar ukuran) maksimal 7 hari setelah barang diterima
@@ -32,7 +32,8 @@ HIBISCUS_FOOTWEAR/
     ├── 06_retur.sql              # tabel & aturan retur, laporan diperbarui
     ├── 07_data_contoh_retur.sql  # data dummy retur
     ├── 08_akun_pelanggan.sql     # kolom password pelanggan (login toko)
-    └── 09_uji_coba.sql           # (opsional) tampilkan laporan + uji aturan
+    ├── 09_foto_produk.sql        # tabel foto produk (BLOB)
+    └── 99_uji_coba.sql           # (opsional) tampilkan laporan + uji aturan
 ```
 
 ## Kebutuhan
@@ -49,10 +50,10 @@ HIBISCUS_FOOTWEAR/
 
 1. Buka XAMPP Control Panel, lalu **Start** Apache dan MySQL.
 2. Buka `http://localhost/phpmyadmin`.
-3. Pilih tab **Import**, lalu impor file di folder `database/` **berurutan**: `01` → `02` → `03` → `04` → `06` → `07` → `08`.
-4. **Opsional:** impor `09_uji_coba.sql` untuk melihat semua laporan dan hasil pengujian. File ini tidak mengubah data.
+3. Pilih tab **Import**, lalu impor file di folder `database/` **berurutan**: `01` → `02` → `03` → `04` → `06` → `07` → `08` → `09`.
+4. **Opsional:** impor `99_uji_coba.sql` untuk melihat semua laporan dan hasil pengujian. File ini tidak mengubah data.
 
-> Sudah pernah impor `01`–`07`? Cukup impor `08` (aman diimpor ulang), karena data lama tidak dihapus.
+> Sudah pernah impor `01`–`08`? Cukup impor `09` (aman diimpor ulang), karena data lama tidak dihapus.
 > `06` aman diimpor ulang. `07` cukup sekali; jika diimpor ulang akan berhenti di error *Duplicate entry* tanpa mengubah data.
 
 #### Opsi B: Command line
@@ -67,7 +68,8 @@ C:/xampp/mysql/bin/mysql -u root < 04_data_contoh.sql
 C:/xampp/mysql/bin/mysql -u root < 06_retur.sql
 C:/xampp/mysql/bin/mysql -u root < 07_data_contoh_retur.sql
 C:/xampp/mysql/bin/mysql -u root < 08_akun_pelanggan.sql
-C:/xampp/mysql/bin/mysql -u root -t < 09_uji_coba.sql
+C:/xampp/mysql/bin/mysql -u root < 09_foto_produk.sql
+C:/xampp/mysql/bin/mysql -u root -t < 99_uji_coba.sql
 ```
 
 ### 2. Aplikasi web
@@ -97,8 +99,8 @@ Pelanggan baru bisa mendaftar sendiri lewat menu **Daftar** di toko.
 
 | Panel admin | Toko online |
 |---|---|
-| Dashboard: omzet bulan ini, pesanan perlu diproses, stok menipis | Katalog per kategori, pencarian, label terlaris |
-| CRUD master: kategori, produk + ukuran, bahan baku, supplier, pelanggan, pengguna | Pilih ukuran sesuai stok, keranjang |
+| Dashboard: omzet bulan ini, pesanan perlu diproses, stok menipis | Katalog berfoto per kategori, pencarian, label terlaris |
+| CRUD master: kategori, produk + ukuran + foto, bahan baku, supplier, pelanggan, pengguna | Pilih ukuran sesuai stok, keranjang |
 | Pembelian bahan baku (banyak baris per faktur) | Checkout dengan ongkir otomatis per kota |
 | Produksi: pemakaian bahan, hasil per ukuran, tandai selesai | Pembayaran lunas (simulasi), batalkan pesanan |
 | Penjualan: input pesanan, catat bayar, kirim, diterima, batal | Lacak status pesanan, konfirmasi diterima |
@@ -155,7 +157,7 @@ UPDATE retur SET status = 'selesai' WHERE id_retur = @rt;
 
 ## Hasil Pengujian
 
-`09_uji_coba.sql` sudah dijalankan di MariaDB 10.4.32 (XAMPP), dan semua uji lolos:
+`99_uji_coba.sql` sudah dijalankan di MariaDB 10.4.32 (XAMPP), dan semua uji lolos:
 
 - 24 dari 24 uji aturan bisnis **ditolak dengan benar**, misalnya pesanan melebihi stok, pembayaran tidak lunas, kirim sebelum bayar, lompat status, retur lewat 7 hari, dan retur melebihi jumlah dibeli
 - Stok tersimpan **sama** dengan stok hasil hitung ulang dari semua transaksi (bahan baku dan produk jadi)

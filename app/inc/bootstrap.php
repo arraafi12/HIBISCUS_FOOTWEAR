@@ -355,8 +355,101 @@ function ongkir_untuk(string $kota): int
     return (int) $map['default'];
 }
 
+// ---------------------------------------------------------------------
+//  Foto produk (BLOB di tabel produk_foto, file 09_foto_produk.sql)
+// ---------------------------------------------------------------------
+const FOTO_MAKS_BYTE = 921600;   // 900 KB (max_allowed_packet XAMPP = 1 MB)
+const FOTO_TIPE      = ['image/jpeg' => 'JPG', 'image/png' => 'PNG', 'image/webp' => 'WebP'];
+
+/** True jika tabel produk_foto sudah ada (file 09 sudah di-import). */
+function foto_siap(): bool
+{
+    static $siap = null;
+    return $siap ??= (bool) val("SELECT COUNT(*) FROM information_schema.tables
+                                   WHERE table_schema = DATABASE() AND table_name = 'produk_foto'");
+}
+
 /**
- * Kotak produk tipografis, pengganti foto (database belum menyimpan gambar).
+ * Potongan SELECT "versi foto" (timestamp unggah, NULL jika tidak ada foto)
+ * untuk produk beralias $alias. Aman dipakai walau tabel foto belum ada.
+ */
+function sql_foto_versi(string $alias = 'p'): string
+{
+    return foto_siap()
+        ? "(SELECT UNIX_TIMESTAMP(f.diunggah_pada) FROM produk_foto f WHERE f.id_produk = $alias.id_produk)"
+        : 'NULL';
+}
+
+/**
+ * Simpan (atau ganti) foto produk dari $_FILES ke kolom BLOB.
+ * Melempar RuntimeException dengan alasan yang jelas jika file ditolak.
+ */
+function simpan_foto_produk(int $id_produk, array $file): void
+{
+    if (!foto_siap()) {
+        throw new RuntimeException('Tabel foto belum ada di database. Import file database/09_foto_produk.sql di phpMyAdmin, lalu coba lagi.');
+    }
+    $err = $file['error'] ?? UPLOAD_ERR_NO_FILE;
+    if ($err === UPLOAD_ERR_NO_FILE) {
+        throw new RuntimeException('Belum ada file foto yang dipilih.');
+    }
+    if ($err === UPLOAD_ERR_INI_SIZE || $err === UPLOAD_ERR_FORM_SIZE) {
+        throw new RuntimeException('Ukuran file melebihi batas unggah server.');
+    }
+    if ($err !== UPLOAD_ERR_OK || !is_uploaded_file($file['tmp_name'])) {
+        throw new RuntimeException("File gagal diunggah (kode $err). Silakan coba lagi.");
+    }
+
+    $ukuran = filesize($file['tmp_name']);
+    if ($ukuran > FOTO_MAKS_BYTE) {
+        throw new RuntimeException(sprintf('Ukuran foto %s KB, maksimal %d KB. Perkecil foto lalu unggah lagi.',
+            number_format($ukuran / 1024, 0, ',', '.'), FOTO_MAKS_BYTE / 1024));
+    }
+    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
+    if (!isset(FOTO_TIPE[$mime])) {
+        throw new RuntimeException('Format file harus JPG, PNG, atau WebP (file yang dipilih: ' . $mime . ').');
+    }
+    $dimensi = @getimagesize($file['tmp_name']);
+    if (!$dimensi) {
+        throw new RuntimeException('File tidak bisa dibaca sebagai gambar.');
+    }
+
+    $st = db()->prepare('INSERT INTO produk_foto (id_produk, foto, tipe_mime, ukuran_byte, lebar, tinggi)
+                         VALUES (?, ?, ?, ?, ?, ?)
+                         ON DUPLICATE KEY UPDATE foto = VALUES(foto), tipe_mime = VALUES(tipe_mime),
+                           ukuran_byte = VALUES(ukuran_byte), lebar = VALUES(lebar), tinggi = VALUES(tinggi),
+                           diunggah_pada = CURRENT_TIMESTAMP');
+    $st->bindValue(1, $id_produk, PDO::PARAM_INT);
+    $st->bindValue(2, file_get_contents($file['tmp_name']), PDO::PARAM_LOB);   // data biner
+    $st->bindValue(3, $mime);
+    $st->bindValue(4, $ukuran, PDO::PARAM_INT);
+    $st->bindValue(5, min($dimensi[0], 65535), PDO::PARAM_INT);
+    $st->bindValue(6, min($dimensi[1], 65535), PDO::PARAM_INT);
+    $st->execute();
+}
+
+function url_foto(int $id_produk, $versi): string
+{
+    return url('foto.php?id=' . $id_produk . '&v=' . (int) $versi);
+}
+
+/**
+ * Gambar produk: foto asli jika ada, selain itu kotak tipografis.
+ * $p butuh: id_produk, nama_produk, kode_produk, nama_kategori, foto_versi.
+ */
+function produk_media(array $p, string $size = '', string $tag = ''): string
+{
+    if (empty($p['foto_versi'])) {
+        return produk_tile($p['nama_produk'], $size === 'sm' ? '' : $p['kode_produk'], $p['nama_kategori'], $size, $tag);
+    }
+    return '<div class="tile tile-photo' . ($size ? ' tile-' . $size : '') . '">'
+        . '<img src="' . e(url_foto((int) $p['id_produk'], $p['foto_versi'])) . '" alt="' . e($p['nama_produk']) . '" loading="lazy">'
+        . ($tag ? '<span class="tag tag-accent">' . e($tag) . '</span>' : '')
+        . '</div>';
+}
+
+/**
+ * Kotak produk tipografis, pengganti foto bila produk belum punya foto.
  * Warna latar netral dipilih tetap per kategori. $size: '' | 'lg' | 'sm'.
  */
 function produk_tile(string $nama, string $kode, string $kategori, string $size = '', string $tag = ''): string

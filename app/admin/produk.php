@@ -9,11 +9,14 @@ crud_page([
     'active' => 'produk',
     'order'  => 'kode_produk',
     'search' => ['kode_produk', 'nama_produk', 'nama_kategori'],
-    'list_sql' => 'SELECT p.*, k.nama_kategori,
+    'list_sql' => 'SELECT p.*, k.nama_kategori, ' . sql_foto_versi('p') . ' AS foto_versi,
                           (SELECT COUNT(*) FROM produk_ukuran u WHERE u.id_produk = p.id_produk) AS jumlah_ukuran,
                           (SELECT COALESCE(SUM(stok),0) FROM produk_ukuran u WHERE u.id_produk = p.id_produk) AS total_stok
                      FROM produk p JOIN kategori k ON k.id_kategori = p.id_kategori',
     'columns' => [
+        'foto_versi'    => ['label' => 'Foto', 'format' => fn($r) => $r['foto_versi']
+            ? '<img class="thumb" src="' . e(url_foto((int) $r['id_produk'], $r['foto_versi'])) . '" alt="" loading="lazy">'
+            : '<span class="text-muted small">–</span>'],
         'kode_produk'   => ['label' => 'Kode'],
         'nama_produk'   => ['label' => 'Nama Produk'],
         'nama_kategori' => ['label' => 'Kategori'],
@@ -23,7 +26,7 @@ crud_page([
         'aktif'         => ['label' => 'Dijual', 'format' => 'bool'],
     ],
     'row_actions' => fn($r) => '<a class="btn btn-sm btn-outline-secondary" href="produk_ukuran.php?id=' . e($r['id_produk'])
-        . '" title="Ukuran & stok">Ukuran</a>',
+        . '" title="Foto, ukuran & stok">Foto & Ukuran</a>',
     'fields' => [
         'kode_produk' => ['label' => 'Kode Produk', 'required' => true, 'help' => 'Contoh: SNK-003. Dipakai sebagai awalan SKU.'],
         'nama_produk' => ['label' => 'Nama Produk', 'required' => true],

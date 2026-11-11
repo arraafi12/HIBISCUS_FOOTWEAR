@@ -14,7 +14,7 @@ if ($cari !== '') {
     $where[] = '(p.nama_produk LIKE ? OR p.deskripsi LIKE ?)';
     array_push($params, "%$cari%", "%$cari%");
 }
-$produk = rows('SELECT p.*, k.nama_kategori,
+$produk = rows('SELECT p.*, k.nama_kategori, ' . sql_foto_versi('p') . ' AS foto_versi,
                        (SELECT COALESCE(SUM(stok),0) FROM produk_ukuran u WHERE u.id_produk = p.id_produk) AS stok,
                        (SELECT GROUP_CONCAT(ukuran ORDER BY ukuran) FROM produk_ukuran u WHERE u.id_produk = p.id_produk AND u.stok > 0) AS ukuran_tersedia
                   FROM produk p JOIN kategori k ON k.id_kategori = p.id_kategori
@@ -60,7 +60,7 @@ toko_header('Katalog', 'katalog');
   <?php foreach ($produk as $p): ?>
     <div class="col-6 col-md-4 col-lg-3">
       <a class="product" href="produk.php?id=<?= e($p['id_produk']) ?>">
-        <?= produk_tile($p['nama_produk'], $p['kode_produk'], $p['nama_kategori'], '',
+        <?= produk_media($p, '',
               $p['stok'] == 0 ? 'Habis' : (in_array($p['kode_produk'], $terlaris, true) ? 'Terlaris' : '')) ?>
         <div class="product-name"><?= e($p['nama_produk']) ?></div>
         <div class="product-price"><?= rupiah($p['harga_jual']) ?></div>
