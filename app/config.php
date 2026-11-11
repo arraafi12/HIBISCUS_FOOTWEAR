@@ -16,6 +16,16 @@ return [
 
     'app_name' => 'HIBISCUS FOOTWEAR',
 
+    // Kurir yang dipakai: nama => [kode awalan resi, daftar layanan].
+    // No. resi dibuat otomatis: KODE + YYMMDD + nomor urut 4 digit, mis. JNE2611110001.
+    'kurir' => [
+        'JNE'           => ['kode' => 'JNE', 'layanan' => ['REG', 'YES', 'OKE']],
+        'J&T'           => ['kode' => 'JT',  'layanan' => ['EZ', 'Express']],
+        'SiCepat'       => ['kode' => 'SCP', 'layanan' => ['REG', 'BEST', 'HALU']],
+        'AnterAja'      => ['kode' => 'ATJ', 'layanan' => ['Reguler', 'Next Day']],
+        'Pos Indonesia' => ['kode' => 'POS', 'layanan' => ['Kilat Khusus', 'Express']],
+    ],
+
     // Ongkos kirim (Rp) per kota tujuan; kota lain memakai 'default'
     'ongkir' => [
         'default'         => 25000,

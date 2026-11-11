@@ -20,8 +20,8 @@ if (is_post()) {
                 flash('success', 'Pembayaran lunas dicatat.');
                 break;
             case 'kirim':
-                kirim_pesanan($id, post('kurir'), post('layanan'), post('no_resi'), post('tanggal_kirim'), $u['id']);
-                flash('success', 'Pengiriman dicatat. Status pesanan: dikirim.');
+                $resi = kirim_pesanan($id, post('kurir'), post('layanan'), post('tanggal_kirim'), $u['id']);
+                flash('success', "Pengiriman dicatat dengan no. resi $resi. Status pesanan: dikirim.");
                 break;
             case 'terima':
                 terima_pesanan($id, post('tanggal_terima'));
@@ -147,13 +147,36 @@ page_title('Pesanan ' . $pj['no_pesanan'],
         <?php elseif ($st === 'dibayar'): ?>
           <form method="post">
             <?= csrf_field() ?><input type="hidden" name="action" value="kirim">
+            <?php $kurir = config('kurir'); $k1 = array_key_first($kurir); ?>
             <div class="row g-2 mb-2">
-              <div class="col-7"><input class="form-control form-control-sm" name="kurir" placeholder="Kurir (JNE, J&T, ...)" required></div>
-              <div class="col-5"><input class="form-control form-control-sm" name="layanan" placeholder="Layanan"></div>
+              <div class="col-7">
+                <label class="form-label small" for="kurir">Kurir</label>
+                <select class="form-select form-select-sm" id="kurir" name="kurir" required
+                        data-layanan='<?= e(json_encode(array_map(fn($k) => $k['layanan'], $kurir))) ?>'>
+                  <?php foreach ($kurir as $nama => $k): ?><option value="<?= e($nama) ?>"><?= e($nama) ?></option><?php endforeach; ?>
+                </select>
+              </div>
+              <div class="col-5">
+                <label class="form-label small" for="layanan">Layanan</label>
+                <select class="form-select form-select-sm" id="layanan" name="layanan" required>
+                  <?php foreach ($kurir[$k1]['layanan'] as $l): ?><option value="<?= e($l) ?>"><?= e($l) ?></option><?php endforeach; ?>
+                </select>
+              </div>
             </div>
-            <input class="form-control form-control-sm mb-2" name="no_resi" placeholder="No. resi" required>
-            <input class="form-control form-control-sm mb-2" type="date" name="tanggal_kirim" value="<?= date('Y-m-d') ?>" required>
+            <label class="form-label small" for="tanggal_kirim">Tanggal kirim</label>
+            <input class="form-control form-control-sm mb-2" type="date" id="tanggal_kirim" name="tanggal_kirim" value="<?= date('Y-m-d') ?>" min="<?= e(substr($pj['tanggal_pesan'], 0, 10)) ?>" required>
+            <p class="small text-muted mb-2">No. resi dibuat otomatis saat disimpan.</p>
             <button class="btn btn-sm btn-primary w-100">Catat Pengiriman</button>
+            <script>
+              (function () {
+                var k = document.getElementById('kurir'), l = document.getElementById('layanan');
+                var peta = JSON.parse(k.dataset.layanan);
+                k.addEventListener('change', function () {
+                  l.innerHTML = '';
+                  peta[k.value].forEach(function (v) { l.add(new Option(v, v)); });
+                });
+              })();
+            </script>
           </form>
         <?php else: ?><span class="text-muted small">Belum bisa dikirim.</span><?php endif; ?>
       </div>

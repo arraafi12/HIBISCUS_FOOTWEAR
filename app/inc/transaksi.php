@@ -53,10 +53,29 @@ function bayar_pesanan(int $id, string $metode, ?string $referensi): void
     });
 }
 
-function kirim_pesanan(int $id, string $kurir, ?string $layanan, string $resi, string $tanggal, int $id_pengguna): void
+/**
+ * Catat pengiriman. Kurir & layanan harus ada di config 'kurir';
+ * no. resi dibuat otomatis (simulasi, tanpa integrasi API kurir).
+ * Mengembalikan no. resi yang dibuat.
+ */
+function kirim_pesanan(int $id, string $kurir, string $layanan, string $tanggal, int $id_pengguna): string
 {
-    q('INSERT INTO pengiriman (id_penjualan, kurir, layanan, no_resi, tanggal_kirim, id_pengguna) VALUES (?, ?, ?, ?, ?, ?)',
-      [$id, $kurir, $layanan ?: null, $resi, $tanggal, $id_pengguna]);
+    $daftar = config('kurir');
+    if (!isset($daftar[$kurir])) {
+        throw new InvalidArgumentException('Pilih kurir dari daftar.');
+    }
+    if (!in_array($layanan, $daftar[$kurir]['layanan'], true)) {
+        throw new InvalidArgumentException("Layanan \"$layanan\" tidak tersedia untuk kurir $kurir.");
+    }
+    if (!strtotime($tanggal)) {
+        throw new InvalidArgumentException('Tanggal kirim tidak valid.');
+    }
+    return dalam_transaksi(function () use ($id, $kurir, $layanan, $tanggal, $id_pengguna, $daftar) {
+        $resi = next_number('pengiriman', 'no_resi', $daftar[$kurir]['kode'] . date('ymd', strtotime($tanggal)), 4);
+        q('INSERT INTO pengiriman (id_penjualan, kurir, layanan, no_resi, tanggal_kirim, id_pengguna) VALUES (?, ?, ?, ?, ?, ?)',
+          [$id, $kurir, $layanan, $resi, $tanggal, $id_pengguna]);
+        return $resi;
+    });
 }
 
 function terima_pesanan(int $id, string $tanggal): void
