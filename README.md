@@ -33,6 +33,7 @@ HIBISCUS_FOOTWEAR/
     ├── 07_data_contoh_retur.sql  # data dummy retur
     ├── 08_akun_pelanggan.sql     # kolom password pelanggan (login toko)
     ├── 09_foto_produk.sql        # tabel foto produk (BLOB)
+    ├── 10_bukti_bayar.sql        # kolom bukti bayar (BLOB) & update metode
     └── 99_uji_coba.sql           # (opsional) tampilkan laporan + uji aturan
 ```
 
@@ -50,7 +51,7 @@ HIBISCUS_FOOTWEAR/
 
 1. Buka XAMPP Control Panel, lalu **Start** Apache dan MySQL.
 2. Buka `http://localhost/phpmyadmin`.
-3. Pilih tab **Import**, lalu impor file di folder `database/` **berurutan**: `01` → `02` → `03` → `04` → `06` → `07` → `08` → `09`.
+3. Pilih tab **Import**, lalu impor file di folder `database/` **berurutan**: `01` → `02` → `03` → `04` → `06` → `07` → `08` → `09` → `10`.
 4. **Opsional:** impor `99_uji_coba.sql` untuk melihat semua laporan dan hasil pengujian. File ini tidak mengubah data.
 
 > Sudah pernah impor `01`–`08`? Cukup impor `09` (aman diimpor ulang), karena data lama tidak dihapus.
@@ -69,6 +70,7 @@ C:/xampp/mysql/bin/mysql -u root < 06_retur.sql
 C:/xampp/mysql/bin/mysql -u root < 07_data_contoh_retur.sql
 C:/xampp/mysql/bin/mysql -u root < 08_akun_pelanggan.sql
 C:/xampp/mysql/bin/mysql -u root < 09_foto_produk.sql
+C:/xampp/mysql/bin/mysql -u root < 10_bukti_bayar.sql
 C:/xampp/mysql/bin/mysql -u root -t < 99_uji_coba.sql
 ```
 

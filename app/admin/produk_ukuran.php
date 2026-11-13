@@ -65,6 +65,7 @@ $produk['foto_versi'] = $foto['versi'] ?? null;
 
 admin_header('Produk ' . $produk['nama_produk'], 'produk');
 page_title('Foto, Ukuran & Stok: ' . $produk['nama_produk'],
+    '<a class="btn btn-outline-primary me-2" href="produk.php?edit=' . $id . '"><i class="bi bi-pencil"></i> Ubah Nama / Data Produk</a>' .
     '<a class="btn btn-outline-secondary" href="produk.php">Daftar Produk</a>');
 ?>
 <div class="row g-3">

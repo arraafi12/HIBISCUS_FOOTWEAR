@@ -341,7 +341,7 @@ function head_assets(): string
         . '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">'
         . '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">'
         . '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">'
-        . '<link rel="stylesheet" href="' . url('assets/app.css') . '">';
+        . '<link rel="stylesheet" href="' . url('assets/app.css') . '?v=' . filemtime(__DIR__ . '/../assets/app.css') . '">';
 }
 
 function ongkir_untuk(string $kota): int

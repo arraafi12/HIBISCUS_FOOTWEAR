@@ -6,6 +6,14 @@ $isi = keranjang_detail();
 if (!$isi) {
     redirect('keranjang.php');
 }
+
+// Hanya checkout item yang dipilih
+$dipilih = $_SESSION['pilihan_keranjang'] ?? array_column($isi, 'id_varian');
+$isi = array_values(array_filter($isi, fn($i) => in_array((int)$i['id_varian'], $dipilih, true)));
+if (!$isi) {
+    flash('warning', 'Pilih minimal 1 produk untuk checkout.');
+    redirect('keranjang.php');
+}
 $pl = row('SELECT * FROM pelanggan WHERE id_pelanggan = ?', [$me['id']]);
 
 if (is_post()) {
@@ -16,8 +24,12 @@ if (is_post()) {
         if (post('alamat') === '' || $kota === '') {
             throw new InvalidArgumentException('Alamat dan kota tujuan wajib diisi.');
         }
-        $id = buat_pesanan($me['id'], keranjang(), $alamat, ongkir_untuk($kota), post('catatan') ?: null);
-        $_SESSION['keranjang'] = [];
+        $id = buat_pesanan($me['id'], array_column($isi, 'jumlah', 'id_varian'), $alamat, ongkir_untuk($kota), post('catatan') ?: null);
+        // Hapus dari keranjang hanya item yang sudah dipesan
+        foreach ($isi as $item) {
+            keranjang_set((int)$item['id_varian'], 0);
+        }
+        unset($_SESSION['pilihan_keranjang']);
         flash('success', 'Pesanan berhasil dibuat. Silakan lakukan pembayaran.');
         redirect('pesanan.php?id=' . $id);
     } catch (Throwable $e) {

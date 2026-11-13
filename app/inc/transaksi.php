@@ -43,13 +43,14 @@ function buat_pesanan(int $id_pelanggan, array $items, string $alamat, int $ongk
     });
 }
 
-/** Bayar lunas: jumlah bayar = total tagihan. */
-function bayar_pesanan(int $id, string $metode, ?string $referensi): void
+/** Bayar lunas: jumlah bayar = total tagihan. $bukti = ['data'=>binary,'mime'=>string] atau null. */
+function bayar_pesanan(int $id, string $metode, ?string $referensi, ?array $bukti = null): void
 {
-    dalam_transaksi(function () use ($id, $metode, $referensi) {
+    dalam_transaksi(function () use ($id, $metode, $referensi, $bukti) {
         $total = val('SELECT total FROM penjualan WHERE id_penjualan = ? FOR UPDATE', [$id]);
-        q('INSERT INTO pembayaran (id_penjualan, tanggal_bayar, metode, jumlah_bayar, no_referensi) VALUES (?, NOW(), ?, ?, ?)',
-          [$id, $metode, $total, $referensi ?: null]);
+        q('INSERT INTO pembayaran (id_penjualan, tanggal_bayar, metode, jumlah_bayar, no_referensi, bukti_bayar, tipe_bukti) VALUES (?, NOW(), ?, ?, ?, ?, ?)',
+          [$id, $metode, $total, $referensi ?: null,
+           $bukti['data'] ?? null, $bukti['mime'] ?? null]);
     });
 }
 

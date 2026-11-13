@@ -88,7 +88,7 @@ page_title('Retur ' . $r['no_retur'], '<a class="btn btn-outline-secondary" href
               <?= $r['jenis'] === 'tukar' ? 'dan ukuran pengganti dikeluarkan dari stok' : '' ?>.</p>
             <div class="d-flex gap-2">
               <button class="btn btn-sm btn-success flex-fill" name="action" value="terima">Terima Barang</button>
-              <button class="btn btn-sm btn-outline-danger flex-fill" name="action" value="tolak" onclick="return confirm('Tolak retur ini?')">Tolak</button>
+              <button class="btn btn-sm btn-outline-danger flex-fill" name="action" value="tolak" data-confirm="Tolak retur ini?">Tolak</button>
             </div>
           <?php else: ?>
             <p class="small text-muted"><?= $r['jenis'] === 'refund'

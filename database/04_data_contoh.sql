@@ -167,7 +167,7 @@ INSERT INTO detail_penjualan (id_penjualan, id_varian, jumlah, harga_satuan) VAL
  (5,  8, 1, NULL);     -- Bloom 38
 
 SELECT total INTO @tagihan FROM penjualan WHERE id_penjualan = 3;
-INSERT INTO pembayaran (id_penjualan, tanggal_bayar, metode, jumlah_bayar, no_referensi) VALUES (3, '2026-10-09 09:00:00', 'qris', @tagihan, 'QR-1009-001');
+INSERT INTO pembayaran (id_penjualan, tanggal_bayar, metode, jumlah_bayar, no_referensi) VALUES (3, '2026-10-09 09:00:00', 'e_wallet', @tagihan, 'EW-1009-001');
 SELECT total INTO @tagihan FROM penjualan WHERE id_penjualan = 4;
 INSERT INTO pembayaran (id_penjualan, tanggal_bayar, metode, jumlah_bayar, no_referensi) VALUES (4, '2026-10-18 14:00:00', 'transfer_bank', @tagihan, 'TRF-1018-001');
 SELECT total INTO @tagihan FROM penjualan WHERE id_penjualan = 5;

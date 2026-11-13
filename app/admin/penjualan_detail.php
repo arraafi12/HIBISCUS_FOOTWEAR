@@ -114,12 +114,53 @@ page_title('Pesanan ' . $pj['no_pesanan'],
         <?php if ($bayar): ?>
           <div><?= e(label($bayar['metode'])) ?> · <?= rupiah($bayar['jumlah_bayar']) ?></div>
           <div class="small text-muted"><?= e(tgl($bayar['tanggal_bayar'], true)) ?> · Ref: <?= e($bayar['no_referensi'] ?: '-') ?></div>
+          <?php if ($bayar['bukti_bayar']): ?>
+            <div class="mt-2">
+              <div class="small text-muted mb-1">Bukti Pembayaran:</div>
+              <?php if (str_starts_with($bayar['tipe_bukti'] ?? '', 'image/')): ?>
+                <a href="#modalBuktiBayar" data-bs-toggle="modal" data-bs-target="#modalBuktiBayar" title="Klik untuk memperbesar">
+                  <img src="bukti_bayar_admin.php?id=<?= e($bayar['id_pembayaran']) ?>"
+                       class="img-fluid rounded border shadow-sm" style="max-height:180px; cursor:pointer;" alt="Bukti bayar">
+                </a>
+                <div class="small text-muted mt-1" style="font-size:0.78rem"><i class="bi bi-arrows-fullscreen"></i> Klik gambar untuk memperbesar</div>
+
+                <!-- Modal Popup Bukti Bayar di Tengah -->
+                <div class="modal fade" id="modalBuktiBayar" tabindex="-1" aria-labelledby="modalBuktiBayarLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header py-2">
+                        <h6 class="modal-title m-0" id="modalBuktiBayarLabel">Bukti Pembayaran · Pesanan <?= e($pj['no_pesanan']) ?></h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                      </div>
+                      <div class="modal-body text-center p-2 bg-light">
+                        <img src="bukti_bayar_admin.php?id=<?= e($bayar['id_pembayaran']) ?>"
+                             class="img-fluid rounded shadow-sm" style="max-height: 80vh; object-fit: contain;" alt="Bukti Pembayaran">
+                      </div>
+                      <div class="modal-footer py-2 justify-content-between">
+                        <span class="small text-muted"><?= e(tgl($bayar['tanggal_bayar'], true)) ?> · <?= rupiah($bayar['jumlah_bayar']) ?></span>
+                        <div>
+                          <a href="bukti_bayar_admin.php?id=<?= e($bayar['id_pembayaran']) ?>" target="_blank" class="btn btn-sm btn-outline-secondary me-1">Buka Tab Baru ↗</a>
+                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <?php else: ?>
+                <a href="bukti_bayar_admin.php?id=<?= e($bayar['id_pembayaran']) ?>" target="_blank"
+                   class="btn btn-sm btn-outline-secondary">📄 Lihat PDF Bukti Bayar</a>
+              <?php endif; ?>
+            </div>
+          <?php else: ?>
+            <div class="small text-muted mt-1 fst-italic">Tidak ada bukti bayar diunggah.</div>
+          <?php endif; ?>
         <?php elseif ($st === 'menunggu_pembayaran'): ?>
           <form method="post">
             <?= csrf_field() ?><input type="hidden" name="action" value="bayar">
             <select class="form-select form-select-sm mb-2" name="metode" required>
-              <option value="transfer_bank">Transfer Bank</option><option value="e_wallet">E-Wallet</option>
-              <option value="qris">QRIS</option><option value="kartu_kredit">Kartu Kredit</option>
+              <option value="transfer_bank">Transfer Bank</option>
+              <option value="e_wallet">E-Wallet</option>
+              <option value="kartu_kredit">Kartu Kredit</option>
             </select>
             <input class="form-control form-control-sm mb-2" name="no_referensi" placeholder="No. referensi / bukti">
             <button class="btn btn-sm btn-success w-100">Catat Lunas <?= rupiah($pj['total']) ?></button>

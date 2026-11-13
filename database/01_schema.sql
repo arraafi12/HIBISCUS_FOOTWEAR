@@ -243,9 +243,11 @@ CREATE TABLE pembayaran (
   id_pembayaran  INT UNSIGNED   NOT NULL AUTO_INCREMENT,
   id_penjualan   INT UNSIGNED   NOT NULL,
   tanggal_bayar  DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  metode         ENUM('transfer_bank','e_wallet','qris','kartu_kredit') NOT NULL,
+  metode         ENUM('transfer_bank','e_wallet','kartu_kredit') NOT NULL,
   jumlah_bayar   DECIMAL(14,2)  NOT NULL,
   no_referensi   VARCHAR(50)    NULL,
+  bukti_bayar    MEDIUMBLOB     NULL,
+  tipe_bukti     VARCHAR(30)    NULL,
   PRIMARY KEY (id_pembayaran),
   UNIQUE KEY uq_pembayaran_penjualan (id_penjualan),
   CONSTRAINT fk_pembayaran_penjualan FOREIGN KEY (id_penjualan)
